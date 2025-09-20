@@ -145,6 +145,10 @@ cython_debug/
 output/
 data/datasets/
 
+# Benchmarking results (too large for git)
+results/
+bench_runs.jsonl
+
 # VIP specific
 *.bat
 start_*.bat

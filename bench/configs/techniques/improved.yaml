@@ -1,0 +1,25 @@
+# Improved technique configuration with all enhancements
+name: "improved"
+description: "Enhanced VIP pipeline with all improvements"
+
+# Technique parameters
+params:
+  defects:
+    - "scratches"
+    - "contamination" 
+    - "discoloration"
+    - "cracks"
+    - "flash"
+  resize_width: null  # No resizing
+  
+  # Enhancement flags
+  use_background_removal: true
+  use_glare_removal: true
+  use_region_growing: true
+  use_hog_enhancement: true
+  
+  # Enhancement parameters
+  bg_method: "simple"  # "simple", "mog2", "knn", "static"
+  glare_method: "adaptive"  # "inpainting", "intensity", "adaptive"
+  intensity_threshold: 10.0  # For region growing
+  glare_intensity_threshold: 0.8  # For glare detection
