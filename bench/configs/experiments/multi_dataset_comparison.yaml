@@ -1,0 +1,100 @@
+# Multi-Dataset Comparison Experiment
+name: "multi_dataset_comparison"
+description: "Compare baseline vs improved techniques across multiple datasets"
+
+# Multiple datasets for comprehensive evaluation
+datasets:
+  - name: "roboflow_plastic_defects"
+    weight: 2.0  # Higher weight for most relevant dataset
+  - name: "gc10_det"
+    weight: 1.5  # Good coverage of defect types
+  - name: "neu_surface_defects"
+    weight: 1.0  # Classic benchmark dataset
+
+# Techniques to benchmark
+techniques:
+  - "baseline"
+  - "improved"
+  - "bg_removal"
+  - "hog_enhancement"
+
+# Technique-specific configurations
+technique_configs:
+  baseline:
+    defects:
+      - "scratches"
+      - "contamination"
+      - "discoloration" 
+      - "cracks"
+      - "flash"
+  
+  improved:
+    defects:
+      - "scratches"
+      - "contamination"
+      - "discoloration" 
+      - "cracks"
+      - "flash"
+    use_background_removal: true
+    use_glare_removal: true
+    use_region_growing: false  # Skip for speed
+    use_hog_enhancement: true
+    bg_method: "simple"
+    glare_method: "adaptive"
+    intensity_threshold: 15.0
+    glare_intensity_threshold: 0.8
+  
+  bg_removal:
+    defects:
+      - "scratches"
+      - "contamination"
+      - "discoloration" 
+      - "cracks"
+      - "flash"
+    bg_method: "simple"
+  
+  hog_enhancement:
+    defects:
+      - "scratches"
+      - "contamination"
+      - "discoloration" 
+      - "cracks"
+      - "flash"
+
+# Evaluation settings
+evaluation:
+  metrics:
+    - "classification"
+    - "detection" 
+    - "performance"
+  
+  # Sample limits for faster evaluation
+  max_images_per_dataset: 50  # Limit for demo purposes
+  
+  # Cross-dataset evaluation
+  cross_dataset_eval: true
+  
+  # Performance profiling
+  profile_memory: true
+  profile_timing: true
+
+# Reproducibility
+seed: 42
+deterministic: true
+
+# Output settings
+output:
+  save_visualizations: true
+  save_detailed_results: true
+  save_per_image_analysis: true
+  
+  # Generate comparative plots
+  comparative_analysis: true
+  
+  # Export results for external analysis
+  export_formats: ["csv", "json"]
+
+# Resource limits
+resources:
+  max_runtime_minutes: 30
+  max_memory_gb: 4

@@ -1,0 +1,65 @@
+# Roboflow Plastic Defects Dataset Configuration
+name: "roboflow_plastic_defects"
+description: "Plastic container defects - directly relevant to VIP use case"
+task_type: "detection"
+
+# Dataset paths
+data_dir: "data/raw/roboflow_plastic_defects"
+processed_dir: "data/processed/roboflow_plastic_defects"
+manifest_file: "data/processed/roboflow_plastic_defects/manifest.jsonl"
+
+# Class labels (matches VIP defect types)
+classes:
+  - "black_speck"     # Maps to contamination
+  - "dirty"           # Maps to contamination  
+  - "scratch"         # Direct match
+
+# Label mapping to VIP types
+label_map:
+  "black_speck": "contamination"
+  "dirty": "contamination"
+  "scratch": "scratch"
+
+# Dataset splits
+splits:
+  train: 0.7
+  val: 0.2
+  test: 0.1
+
+# License and attribution
+license: "CC BY 4.0"
+license_url: "https://creativecommons.org/licenses/by/4.0/"
+citation: "Roboflow Plastic Defects Dataset. Available at: https://universe.roboflow.com/panops/plastic-defects"
+
+# Source information
+source_url: "https://universe.roboflow.com/panops/plastic-defects"
+download_method: "manual"  # Requires Roboflow account
+
+# Dataset statistics
+stats:
+  total_images: 149
+  image_format: "jpg"
+  image_size: "variable"
+  annotation_format: "bounding_boxes"
+  defect_classes: 3
+  size_mb: 50
+
+# Usage permissions
+commercial_use: true
+attribution_required: true
+share_alike: false
+
+# Relevance to VIP
+vip_relevance: "high"  # Direct match for plastic container defects
+defect_coverage:
+  contamination: true
+  scratches: true
+  cracks: false
+  discoloration: false
+  flash: false
+
+# Image preprocessing
+preprocessing:
+  resize_width: 640      # Standard for object detection
+  normalize: true
+  format: "jpg"

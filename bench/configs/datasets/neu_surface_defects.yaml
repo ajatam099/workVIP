@@ -1,0 +1,93 @@
+# NEU Surface Defect Database Configuration
+name: "neu_surface_defects"
+description: "Steel surface defect classification dataset"
+task_type: "classification"
+
+# Dataset paths
+data_dir: "data/raw/neu_surface_defects"
+processed_dir: "data/processed/neu_surface_defects"
+manifest_file: "data/processed/neu_surface_defects/manifest.jsonl"
+
+# Class labels (6 steel defect types)
+classes:
+  - "crazing"
+  - "inclusion" 
+  - "patches"
+  - "pitted_surface"
+  - "rolled-in_scale"
+  - "scratches"
+
+# Label mapping to VIP types
+label_map:
+  "scratches": "scratch"
+  "crazing": "crack"
+  "pitted_surface": "contamination"
+  "inclusion": "contamination"
+  "patches": "discoloration"
+  "rolled-in_scale": "discoloration"
+
+# Dataset splits (300 images per class)
+splits:
+  train: 0.7    # 210 per class
+  val: 0.15     # 45 per class
+  test: 0.15    # 45 per class
+
+# License and attribution
+license: "Unknown"  # Kaggle dataset without clear license
+license_url: null
+citation: |
+  @article{song2013noise,
+    title={A noise robust method based on completed local binary patterns for hot-rolled steel strip surface defects},
+    author={Song, Kechen and Yan, Yunhui},
+    journal={Applied Surface Science},
+    volume={285},
+    pages={858--864},
+    year={2013}
+  }
+
+# Source information
+source_url: "https://www.kaggle.com/datasets/kaustubhdikshit/neu-surface-defect-database"
+kaggle_dataset_id: "kaustubhdikshit/neu-surface-defect-database"
+download_method: "kaggle"
+
+# Dataset statistics
+stats:
+  total_images: 1800
+  images_per_class: 300
+  image_format: "bmp"
+  image_size: "200x200"
+  defect_classes: 6
+  size_mb: 100
+
+# Usage permissions (unclear license)
+commercial_use: false  # Conservative approach
+attribution_required: true
+share_alike: false
+
+# Relevance to VIP
+vip_relevance: "medium"  # Steel defects, some transferable concepts
+defect_coverage:
+  contamination: true   # pitted_surface, inclusion
+  scratches: true       # direct match
+  cracks: true          # crazing
+  discoloration: true   # patches, rolled-in_scale
+  flash: false
+
+# Image preprocessing
+preprocessing:
+  resize_width: 200     # Keep original size
+  normalize: true
+  format: "bmp"
+
+# Quality notes
+quality:
+  annotation_quality: "medium"
+  image_quality: "medium"
+  industrial_relevance: "medium"
+  notes: "Classic dataset, widely used in literature but lower resolution"
+
+# Usage warnings
+warnings:
+  - "License unclear - use with caution for commercial applications"
+  - "Contact original authors for commercial use permissions"
+  - "Academic/research use likely acceptable"

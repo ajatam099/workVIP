@@ -1,0 +1,67 @@
+# MVTec Anomaly Detection Dataset Configuration
+name: "mvtec_ad"
+description: "MVTec AD - Industrial anomaly detection with bottle and capsule categories"
+task_type: "detection"  # anomaly detection can be treated as detection
+
+# Dataset paths
+data_dir: "data/raw/mvtec_ad"
+processed_dir: "data/processed/mvtec_ad"
+manifest_file: "data/processed/mvtec_ad/manifest.jsonl"
+
+# Relevant categories for VIP (focus on container-like objects)
+categories:
+  - "bottle"      # Direct match for containers
+  - "capsule"     # Similar to caps/lids
+  - "pill"        # Small container-like objects
+
+# Class labels and mapping
+classes:
+  - "good"        # Normal/no defect
+  - "broken_large"
+  - "broken_small"
+  - "contamination"
+  - "crack"
+  - "faulty_imprint"
+  - "scratch"
+
+# Dataset splits (MVTec provides train/test)
+splits:
+  train: "train"  # Only normal images
+  test: "test"    # Normal + anomalous images
+  val: null       # No validation split
+
+# License and attribution
+license: "CC BY-NC-SA 4.0"
+license_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+citation: |
+  @article{bergmann2019mvtec,
+    title={MVTec AD--A comprehensive real-world dataset for unsupervised anomaly detection},
+    author={Bergmann, Paul and Fauser, Michael and Sattlegger, David and Steger, Carsten},
+    journal={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+    pages={9592--9600},
+    year={2019}
+  }
+
+# Source information
+source_url: "https://www.mvtec.com/company/research/datasets/mvtec-ad"
+download_url: "https://www.mydrive.ch/shares/38536/3830184030e49fe74747669442f0f282/420938113-1629952094/mvtec_anomaly_detection.tar.xz"
+
+# Dataset statistics
+stats:
+  total_images: 5354
+  image_format: "png"
+  image_size: "variable (700x700 to 1024x1024)"
+  defect_types: 73
+  categories: 15
+  size_mb: 4800
+
+# Usage restrictions
+commercial_use: false
+attribution_required: true
+share_alike: true
+
+# Image preprocessing
+preprocessing:
+  resize_width: null      # Keep original size
+  normalize: false
+  format: "png"

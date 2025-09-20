@@ -52,7 +52,63 @@ def load_technique(technique_name: str, technique_config: Dict[str, Any]):
         raise ValueError(f"Unknown technique: {technique_name}")
 
 
-def load_dummy_dataset(dataset_config: Dict[str, Any]) -> tuple:
+def load_dataset_from_manifest(dataset_name: str, max_images: int = None) -> tuple:
+    """
+    Load dataset from manifest file.
+    
+    Args:
+        dataset_name: Name of dataset to load
+        max_images: Maximum number of images to load (None for all)
+    
+    Returns:
+        Tuple of (images, ground_truths, image_ids)
+    """
+    import numpy as np
+    import cv2
+    import json
+    
+    manifest_file = Path(f"data/processed/{dataset_name}/manifest.jsonl")
+    
+    images = []
+    ground_truths = []
+    image_ids = []
+    
+    if manifest_file.exists():
+        print(f"Loading dataset {dataset_name} from manifest...")
+        
+        with open(manifest_file, 'r') as f:
+            entries = [json.loads(line) for line in f]
+        
+        # Limit number of images if specified
+        if max_images:
+            entries = entries[:max_images]
+        
+        for entry in entries:
+            image_path = Path("data/raw") / entry['image_path']
+            
+            try:
+                img = cv2.imread(str(image_path))
+                if img is not None:
+                    images.append(img)
+                    image_ids.append(entry['id'])
+                    
+                    # Convert labels to ground truth format
+                    gt_labels = entry.get('gt_labels', [])
+                    ground_truths.append(gt_labels)
+                else:
+                    print(f"Warning: Could not load image {image_path}")
+            except Exception as e:
+                print(f"Error loading {image_path}: {e}")
+        
+        print(f"Loaded {len(images)} images from {dataset_name}")
+        return images, ground_truths, image_ids
+    
+    else:
+        print(f"Manifest not found for {dataset_name}: {manifest_file}")
+        return load_dummy_dataset({})
+
+
+def load_dummy_dataset(dataset_config: dict[str, Any]) -> tuple:
     """
     Load a dummy dataset for testing.
     
@@ -124,11 +180,19 @@ def run_benchmark(experiment_config: Dict[str, Any], run_id: str) -> Dict[str, A
     set_random_seeds(seed)
     print(f"🎲 Set random seed to {seed}")
     
-    # Load dataset
-    dataset_name = experiment_config['dataset']
+    # Load dataset(s)
+    dataset_name = experiment_config.get('dataset', 'demo_dataset')
     dataset_config = experiment_config.get('dataset_config', {})
+    max_images = experiment_config.get('max_images_per_dataset', None)
+    
     print(f"📊 Loading dataset: {dataset_name}")
-    images, ground_truths, image_ids = load_dummy_dataset(dataset_config)
+    
+    # Try loading from manifest first, fallback to dummy data
+    images, ground_truths, image_ids = load_dataset_from_manifest(dataset_name, max_images)
+    
+    if not images:
+        print("Falling back to dummy dataset...")
+        images, ground_truths, image_ids = load_dummy_dataset(dataset_config)
     
     # Load techniques
     techniques = []
