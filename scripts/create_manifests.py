@@ -167,6 +167,79 @@ class ManifestCreator:
         classes = config.get("classes", [])
         splits = config.get("splits", {"train": 0.7, "val": 0.15, "test": 0.15})
 
+        # Handle special dataset structures
+        if dataset_name == "neu_surface_defects":
+            neu_det_dir = dataset_dir / "NEU-DET"
+            if neu_det_dir.exists():
+                # Process train split
+                train_images_dir = neu_det_dir / "train" / "images"
+                if train_images_dir.exists():
+                    for class_name in classes:
+                        class_dir = train_images_dir / class_name
+                        if class_dir.exists():
+                            for img_file in class_dir.glob("*.jpg"):
+                                rel_path = str(img_file.relative_to(self.raw_dir))
+                                entry = self.create_manifest_entry(
+                                    image_path=rel_path,
+                                    split="train",
+                                    dataset_config=config,
+                                    labels=[class_name],
+                                    meta={"class": class_name},
+                                )
+                                manifest_entries.append(entry)
+                
+                # Process validation split
+                val_images_dir = neu_det_dir / "validation" / "images"
+                if val_images_dir.exists():
+                    for class_name in classes:
+                        class_dir = val_images_dir / class_name
+                        if class_dir.exists():
+                            for img_file in class_dir.glob("*.jpg"):
+                                rel_path = str(img_file.relative_to(self.raw_dir))
+                                entry = self.create_manifest_entry(
+                                    image_path=rel_path,
+                                    split="val",
+                                    dataset_config=config,
+                                    labels=[class_name],
+                                    meta={"class": class_name},
+                                )
+                                manifest_entries.append(entry)
+                return manifest_entries
+        
+        elif dataset_name == "tarros_dataset":
+            # Tarros dataset has DATASET_improved/[angle]/[split]/[class]/ structure
+            dataset_improved_dir = dataset_dir / "DATASET_improved"
+            if dataset_improved_dir.exists():
+                angles = ["1_front", "2_back", "3_up"]
+                splits_map = {"train": "train", "validation": "val", "test": "test"}
+                class_map = {"1_true": "good", "2_false": "defective"}
+                
+                for angle in angles:
+                    angle_dir = dataset_improved_dir / angle
+                    if angle_dir.exists():
+                        for split_name, split_key in splits_map.items():
+                            split_dir = angle_dir / split_name
+                            if split_dir.exists():
+                                for class_dir_name, class_label in class_map.items():
+                                    class_dir = split_dir / class_dir_name
+                                    if class_dir.exists():
+                                        for img_file in class_dir.glob("*.jpg"):
+                                            rel_path = str(img_file.relative_to(self.raw_dir))
+                                            entry = self.create_manifest_entry(
+                                                image_path=rel_path,
+                                                split=split_key,
+                                                dataset_config=config,
+                                                labels=[class_label],
+                                                meta={
+                                                    "class": class_label,
+                                                    "angle": angle,
+                                                    "original_class": class_dir_name
+                                                },
+                                            )
+                                            manifest_entries.append(entry)
+                return manifest_entries
+
+        # Original logic for other datasets
         for class_name in classes:
             class_dir = dataset_dir / class_name
             if not class_dir.exists():
@@ -215,6 +288,55 @@ class ManifestCreator:
         config = self.load_dataset_config(dataset_name)
         dataset_dir = self.raw_dir / dataset_name
         manifest_entries = []
+
+        # Handle GC10-DET special structure
+        if dataset_name == "gc10_det":
+            # GC10-DET has numbered directories (1-10) for different defect types
+            defect_map = {
+                "1": "punching_hole",
+                "2": "welding_line", 
+                "3": "crescent_gap",
+                "4": "water_spot",
+                "5": "oil_spot",
+                "6": "silk_spot",
+                "7": "inclusion",
+                "8": "rolled_pit",
+                "9": "crease",
+                "10": "waist_folding"
+            }
+            
+            for class_num, class_name in defect_map.items():
+                class_dir = dataset_dir / class_num
+                if class_dir.exists():
+                    image_files = list(class_dir.glob("*.jpg"))
+                    
+                    # Split files according to configuration
+                    splits = config.get("splits", {"train": 0.8, "val": 0.1, "test": 0.1})
+                    total_files = len(image_files)
+                    train_count = int(total_files * splits.get("train", 0.8))
+                    val_count = int(total_files * splits.get("val", 0.1))
+                    
+                    for i, img_file in enumerate(image_files):
+                        rel_path = str(img_file.relative_to(self.raw_dir))
+                        
+                        # Determine split
+                        if i < train_count:
+                            split = "train"
+                        elif i < train_count + val_count:
+                            split = "val"
+                        else:
+                            split = "test"
+                        
+                        entry = self.create_manifest_entry(
+                            image_path=rel_path,
+                            split=split,
+                            dataset_config=config,
+                            labels=[class_name],
+                            meta={"class": class_name, "class_number": class_num},
+                        )
+                        manifest_entries.append(entry)
+            
+            return manifest_entries
 
         # Look for annotation files (common formats)
         annotation_files = (

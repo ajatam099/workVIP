@@ -1,0 +1,46 @@
+# NEU Dataset Test Experiment
+name: "neu_dataset_test"
+description: "Test with real NEU surface defects dataset"
+
+# Use the NEU dataset
+dataset: "neu_surface_defects"
+dataset_config: {}
+
+# Limit images for quick testing
+max_images_per_dataset: 10
+
+# Techniques to benchmark
+techniques:
+  - "baseline"
+  - "hog_enhancement"
+
+# Technique-specific configurations
+technique_configs:
+  baseline:
+    defects:
+      - "scratches"
+      - "contamination"
+      - "discoloration" 
+      - "cracks"
+      - "flash"
+  
+  hog_enhancement:
+    defects:
+      - "scratches"
+      - "contamination"
+      - "discoloration" 
+      - "cracks"
+      - "flash"
+
+# Evaluation settings
+metrics:
+  - "classification"
+  - "detection" 
+  - "performance"
+
+# Reproducibility
+seed: 42
+
+# Output settings
+save_visualizations: true
+save_detailed_results: true

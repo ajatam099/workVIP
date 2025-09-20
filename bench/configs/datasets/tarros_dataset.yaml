@@ -1,0 +1,83 @@
+# Tarros Dataset Configuration
+name: "tarros_dataset"
+description: "Container/jar dataset - highly relevant for VIP plastic container inspection"
+task_type: "classification"
+
+# Dataset paths
+data_dir: "data/raw/tarros_dataset"
+processed_dir: "data/processed/tarros_dataset"
+manifest_file: "data/processed/tarros_dataset/manifest.jsonl"
+
+# Class labels (binary classification)
+classes:
+  - "good"      # 1_true = good containers
+  - "defective" # 2_false = defective containers
+
+# Label mapping to VIP types
+label_map:
+  "good": "good"
+  "defective": "defective"
+
+# Dataset has pre-defined splits
+splits:
+  train: "train"     # Use existing train split
+  val: "validation"  # Use existing validation split  
+  test: "test"       # Use existing test split
+
+# License and attribution
+license: "Unknown"
+license_url: null
+citation: "Tarros Dataset Final by Sebastian Franco Gomez. Available at: https://www.kaggle.com/datasets/sebastianfrancogomez/tarros-dataset-final-for-real"
+
+# Source information
+source_url: "https://www.kaggle.com/datasets/sebastianfrancogomez/tarros-dataset-final-for-real"
+kaggle_dataset_id: "sebastianfrancogomez/tarros-dataset-final-for-real"
+download_method: "kaggle"
+
+# Dataset statistics
+stats:
+  total_images: 1600  # Estimated
+  image_format: "jpg"
+  image_size: "variable"
+  views: ["front", "back", "up"]  # Multiple camera angles
+  defect_classes: 2
+  size_mb: 200
+
+# Usage permissions (conservative due to unknown license)
+commercial_use: false
+attribution_required: true
+share_alike: false
+
+# Relevance to VIP - HIGHEST RELEVANCE!
+vip_relevance: "very_high"  # Container dataset is perfect match
+defect_coverage:
+  container_inspection: true
+  multiple_angles: true
+  binary_classification: true
+  good_vs_defective: true
+
+# Quality assessment
+quality:
+  annotation_quality: "high"
+  image_quality: "high"
+  industrial_relevance: "very_high"
+  notes: "Multiple camera angles, proper train/val/test splits, directly relevant to container inspection"
+
+# Image preprocessing
+preprocessing:
+  resize_width: 640
+  normalize: true
+  format: "jpg"
+
+# Special structure notes
+structure_notes:
+  - "DATASET_improved/ contains main data"
+  - "1_front/, 2_back/, 3_up/ represent different camera angles"
+  - "1_true/ = good containers, 2_false/ = defective containers"
+  - "Proper train/validation/test splits already provided"
+
+# Usage warnings
+warnings:
+  - "License unclear - use with caution for commercial applications"
+  - "Contact dataset author for commercial use permissions"
+  - "Excellent for academic/research use"

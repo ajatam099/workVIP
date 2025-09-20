@@ -149,6 +149,12 @@ data/datasets/
 results/
 bench_runs.jsonl
 
+# Large dataset files (keep structure, ignore data)
+data/raw/*/
+!data/raw/demo_surface_defects/
+data/processed/*/manifest.jsonl
+data/download_registry.jsonl
+
 # VIP specific
 *.bat
 start_*.bat

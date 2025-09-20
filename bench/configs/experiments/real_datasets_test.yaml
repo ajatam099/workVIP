@@ -1,0 +1,39 @@
+# Real Datasets Test Experiment
+name: "real_datasets_test"
+description: "Test with real downloaded datasets"
+
+# Use multiple real datasets
+datasets:
+  - name: "neu_surface_defects"
+    weight: 1.0
+  - name: "gc10_det" 
+    weight: 1.5
+
+# Limit for quick testing
+max_images_per_dataset: 5
+
+# Techniques to benchmark
+techniques:
+  - "baseline"
+  - "improved"
+  - "hog_enhancement"
+
+# Technique-specific configurations
+technique_configs:
+  baseline:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+  
+  improved:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+    use_background_removal: true
+    use_glare_removal: true
+    use_region_growing: false  # Skip for speed
+    use_hog_enhancement: true
+  
+  hog_enhancement:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+
+# Evaluation settings
+metrics: ["classification", "detection", "performance"]
+seed: 42
+save_visualizations: true

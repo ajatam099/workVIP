@@ -304,6 +304,15 @@ DATASETS = {
         "defect_types": ["cracks"],
         "description": "56,000 concrete surface crack images",
     },
+    "tarros_dataset": {
+        "name": "Tarros Dataset Final",
+        "dataset_id": "sebastianfrancogomez/tarros-dataset-final-for-real",
+        "type": "kaggle",
+        "license": "Unknown",
+        "size_mb": 200,  # Estimated
+        "defect_types": ["container_defects"],
+        "description": "Container/jar dataset - highly relevant for VIP plastic container inspection",
+    },
 }
 
 
