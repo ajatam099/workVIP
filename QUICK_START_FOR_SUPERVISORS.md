@@ -1,8 +1,8 @@
-# 🎓 Quick Start Guide for Thesis Supervisors
+# Quick Start Guide for Thesis Supervisors
 
 **For evaluating the Vision Inspection Pipeline thesis project**
 
-## ⚡ 5-Minute Setup
+## 5-Minute Setup
 
 ### Option 1: Automated Setup (Recommended)
 ```bash
@@ -32,7 +32,7 @@ python -m pytest tests/ -q  # Should show "39 passed"
 python start_server.py
 ```
 
-## 📊 Key Evaluation Points
+## Key Evaluation Points
 
 ### 1. Core Functionality Test
 - **Web Interface**: Upload any image at http://localhost:8000
@@ -55,7 +55,7 @@ python scripts/bench_run.py --config bench/configs/experiments/baseline_demo.yam
 ls results/  # Shows generated benchmark reports
 ```
 
-## 🗂️ Dataset Access (Optional for Full Evaluation)
+## Dataset Access (Optional for Full Evaluation)
 
 **Note**: Datasets are ~2GB and not included in repository. For full benchmarking:
 
@@ -80,27 +80,27 @@ After manual download:
 python scripts/create_manifests.py  # Create standardized dataset files
 ```
 
-## 🎯 Thesis Evaluation Checklist
+## Thesis Evaluation Checklist
 
-### ✅ Technical Implementation
+### Technical Implementation
 - [ ] **Core Pipeline**: 5 defect detectors working
 - [ ] **Web Interface**: Real-time processing functional
 - [ ] **Test Coverage**: 39/39 tests passing
 - [ ] **Code Quality**: Professional structure and documentation
 
-### ✅ Research Contributions
+### Research Contributions
 - [ ] **Benchmarking Framework**: Comprehensive evaluation system
 - [ ] **Classical CV Improvements**: Multiple enhancement techniques
 - [ ] **Empirical Validation**: Performance improvements demonstrated
 - [ ] **Reproducibility**: All experiments repeatable
 
-### ✅ Academic Standards
+### Academic Standards
 - [ ] **Documentation**: Complete technical documentation
 - [ ] **Methodology**: Clear experimental design
 - [ ] **Results**: Quantified performance improvements (75% detection increase)
 - [ ] **Code Standards**: Professional development practices
 
-## 📈 Expected Results
+## Expected Results
 
 ### Performance Benchmarks
 - **Processing Speed**: 8-16 images/second
@@ -113,7 +113,7 @@ python scripts/create_manifests.py  # Create standardized dataset files
 - Production-ready system with web interface
 - Comprehensive test coverage ensures reliability
 
-## 🚨 Common Issues & Solutions
+## Common Issues & Solutions
 
 **"Module not found"**
 ```bash
@@ -138,14 +138,14 @@ python -m pytest tests/ -v
 python scripts/bench_run.py --config bench/configs/experiments/baseline_demo.yaml
 ```
 
-## 📞 Contact
+## Contact
 
 For technical issues or questions about the thesis:
 - Check `TECHNICAL_IMPLEMENTATION_SUMMARY.md` for detailed technical overview
 - Review `data/README.md` for dataset information
 - All code is documented with comprehensive docstrings
 
-## 🏆 Thesis Summary
+## Thesis Summary
 
 This project demonstrates:
 1. **Classical Computer Vision Mastery**: 5 different defect detection algorithms

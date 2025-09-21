@@ -1,4 +1,4 @@
-# 🔍 VIP - Vision Inspection Pipeline
+# VIP - Vision Inspection Pipeline
 
 **A production-ready computer vision system for automated defect detection in plastic containers with comprehensive benchmarking framework.**
 
@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://img.shields.io/badge/tests-39%2F39%20passing-brightgreen.svg)](#testing)
 
-## 🎯 Overview
+## Overview
 
 The Vision Inspection Pipeline (VIP) is a comprehensive system designed for detecting defects in plastic containers using classical computer vision techniques. It includes:
 
@@ -16,7 +16,7 @@ The Vision Inspection Pipeline (VIP) is a comprehensive system designed for dete
 - **Web Interface**: Real-time processing with FastAPI backend
 - **4 Integrated Datasets**: Production-ready with standardized manifests
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -35,7 +35,7 @@ cd workVIP
 pip install -r requirements.txt
 
 # Verify installation
-python -c "from src.vip.pipeline import Pipeline; from src.vip.config import RunConfig; print('✅ VIP installed successfully')"
+python -c "from src.vip.pipeline import Pipeline; from src.vip.config import RunConfig; print('VIP installed successfully')"
 ```
 
 ### 2. Basic Usage (Without Datasets)
@@ -64,7 +64,7 @@ python scripts/download_datasets.py
 python scripts/create_manifests.py
 
 # Verify setup
-python -c "import os; print('✅ Datasets ready!' if os.path.exists('data/raw/roboflow_plastic_defects') else '❌ Download datasets first')"
+python -c "import os; print('Datasets ready!' if os.path.exists('data/raw/roboflow_plastic_defects') else 'Download datasets first')"
 ```
 
 #### Option B: Manual Dataset Download
@@ -95,7 +95,7 @@ After manual download, create manifests:
 python scripts/create_manifests.py
 ```
 
-## 📊 Running Benchmarks
+## Running Benchmarks
 
 ### Quick Benchmark (Primary Dataset)
 ```bash
@@ -117,7 +117,7 @@ python scripts/bench_run.py --config bench/configs/experiments/production_readin
 - **Best Technique**: bg_removal - 75% more detections, 15.71 images/sec
 - **Processing Speed**: 8.34-16.19 images/sec across all techniques
 
-## 🧪 Testing
+## Testing
 
 Run the comprehensive test suite:
 
@@ -129,7 +129,7 @@ python -m pytest tests/ -v
 # Test categories: detectors (17), pipeline (9), benchmarking (13)
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 workVIP/
@@ -152,7 +152,7 @@ workVIP/
 └── results/                    # Benchmark outputs (not in git)
 ```
 
-## 🔧 API Usage
+## API Usage
 
 ### Web Interface
 ```bash
@@ -179,7 +179,7 @@ for detection in detections:
     print(f"Found {detection.label} with confidence {detection.score:.2f}")
 ```
 
-## 📈 Performance Benchmarks
+## Performance Benchmarks
 
 ### Latest Results (30 images, Roboflow Plastic Defects)
 
@@ -193,7 +193,7 @@ for detection in detections:
 
 **Key Finding**: `bg_removal` technique provides the best balance of accuracy and performance.
 
-## 🗂️ Dataset Information
+## Dataset Information
 
 ### 4 Production Datasets (Fully Integrated)
 
@@ -206,7 +206,7 @@ for detection in detections:
 
 **Note**: Datasets are not included in the repository due to size (~2GB total). Use the download scripts or manual links above.
 
-## 🎓 For Thesis Evaluation
+## For Thesis Evaluation
 
 ### Quick Evaluation Setup
 ```bash
@@ -226,12 +226,12 @@ python scripts/bench_run.py --config bench/configs/experiments/roboflow_plastic_
 ```
 
 ### Key Thesis Contributions
-- ✅ **Classical CV Improvements**: 75% improvement in detection rates
-- ✅ **Comprehensive Benchmarking**: 5 techniques, 4 datasets, reproducible framework
-- ✅ **Production Ready**: Full test suite, web interface, documentation
-- ✅ **Empirical Validation**: Benchmarked on real plastic defect data
+- **Classical CV Improvements**: 75% improvement in detection rates
+- **Comprehensive Benchmarking**: 5 techniques, 4 datasets, reproducible framework
+- **Production Ready**: Full test suite, web interface, documentation
+- **Empirical Validation**: Benchmarked on real plastic defect data
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -262,24 +262,24 @@ python scripts/create_manifests.py
 python scripts/bench_run.py --config bench/configs/experiments/roboflow_plastic_test.yaml
 ```
 
-## 📚 Documentation
+## Documentation
 
 - **[Technical Implementation Summary](TECHNICAL_IMPLEMENTATION_SUMMARY.md)**: Complete technical overview
 - **[Dataset Documentation](data/README.md)**: Dataset details and integration status
 - **[Benchmarking Guide](README_BENCHMARKING.md)**: Detailed benchmarking instructions
 
-## 🤝 Contributing
+## Contributing
 
 This is a thesis project. For academic collaboration or questions:
 1. Check existing issues and documentation
 2. Run the test suite to ensure setup is correct
 3. Contact the author for research collaboration
 
-## 📄 License
+## License
 
 MIT License - see LICENSE file for details.
 
-## 🏆 Acknowledgments
+## Acknowledgments
 
 - **Datasets**: Thanks to Roboflow, Kaggle, and research communities for open datasets
 - **Techniques**: Based on classical computer vision research and industrial best practices
@@ -287,4 +287,4 @@ MIT License - see LICENSE file for details.
 
 ---
 
-**Status**: ✅ Production Ready | 🎓 Thesis Approved | 📊 Benchmarked & Validated
+**Status**: Production Ready | Thesis Approved | Benchmarked & Validated

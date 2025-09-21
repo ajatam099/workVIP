@@ -21,10 +21,10 @@ def print_status(message, status="info"):
     }
     
     symbols = {
-        "info": "ℹ️",
-        "success": "✅",
-        "warning": "⚠️",
-        "error": "❌"
+        "info": "[INFO]",
+        "success": "[SUCCESS]",
+        "warning": "[WARNING]",
+        "error": "[ERROR]"
     }
     
     print(f"{colors[status]}{symbols[status]} {message}{colors['reset']}")
@@ -35,13 +35,13 @@ def run_command(cmd, description):
     try:
         result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
         if result.returncode == 0:
-            print_status(f"✓ {description} completed", "success")
+            print_status(f"{description} completed", "success")
             return True
         else:
-            print_status(f"✗ {description} failed: {result.stderr}", "error")
+            print_status(f"{description} failed: {result.stderr}", "error")
             return False
     except Exception as e:
-        print_status(f"✗ {description} error: {str(e)}", "error")
+        print_status(f"{description} error: {str(e)}", "error")
         return False
 
 def check_python_version():
@@ -52,7 +52,7 @@ def check_python_version():
             version.major, version.minor, version.micro), "error")
         return False
     
-    print_status(f"Python {version.major}.{version.minor}.{version.micro} ✓", "success")
+    print_status(f"Python {version.major}.{version.minor}.{version.micro} OK", "success")
     return True
 
 def install_dependencies():
@@ -121,7 +121,7 @@ def check_datasets():
 
 def main():
     """Main setup function."""
-    print("🔍 VIP - Vision Inspection Pipeline Setup")
+    print("VIP - Vision Inspection Pipeline Setup")
     print("=" * 50)
     
     # Check Python version
@@ -144,7 +144,7 @@ def main():
     print("\n" + "=" * 50)
     print_status("VIP Setup Complete!", "success")
     
-    print("\n🚀 Next Steps:")
+    print("\nNext Steps:")
     print("1. Test web interface: python start_server.py")
     print("2. Open browser to: http://localhost:8000")
     
@@ -154,7 +154,7 @@ def main():
     else:
         print("3. Run benchmarks: python scripts/bench_run.py --config bench/configs/experiments/roboflow_plastic_test.yaml")
     
-    print("\n📚 Documentation:")
+    print("\nDocumentation:")
     print("- README.md - Complete setup guide")
     print("- TECHNICAL_IMPLEMENTATION_SUMMARY.md - Technical details")
     print("- data/README.md - Dataset information")
