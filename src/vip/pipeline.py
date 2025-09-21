@@ -75,15 +75,15 @@ class Pipeline:
         """
         all_detections = []
 
-        print(f"🔧 Running {len(self.detectors)} detectors: {[d.name for d in self.detectors]}")
+        print(f"Running {len(self.detectors)} detectors: {[d.name for d in self.detectors]}")
 
         for detector in self.detectors:
             try:
                 detections = detector.detect(image)
-                print(f"  📍 {detector.name}: {len(detections)} detections")
+                print(f"  {detector.name}: {len(detections)} detections")
                 all_detections.extend(detections)
             except Exception as e:
-                print(f"  ❌ {detector.name} failed: {e}")
+                print(f"  ERROR: {detector.name} failed: {e}")
                 continue
 
         return all_detections

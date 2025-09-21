@@ -188,7 +188,7 @@ def run_benchmark(experiment_config: dict[str, Any], run_id: str) -> dict[str, A
     dataset_config = experiment_config.get("dataset_config", {})
     max_images = experiment_config.get("max_images_per_dataset", None)
 
-    print(f"📊 Loading dataset: {dataset_name}")
+    print(f"Loading dataset: {dataset_name}")
 
     # Try loading from manifest first, fallback to dummy data
     images, ground_truths, image_ids = load_dataset_from_manifest(dataset_name, max_images)
@@ -203,7 +203,7 @@ def run_benchmark(experiment_config: dict[str, Any], run_id: str) -> dict[str, A
 
     for tech_name in technique_names:
         tech_config = experiment_config.get("technique_configs", {}).get(tech_name, {})
-        print(f"🔧 Loading technique: {tech_name}")
+        print(f"Loading technique: {tech_name}")
         technique = load_technique(tech_name, tech_config)
         technique.setup()
         techniques.append(technique)
@@ -213,7 +213,7 @@ def run_benchmark(experiment_config: dict[str, Any], run_id: str) -> dict[str, A
     summary_data = []
 
     for technique in techniques:
-        print(f"🚀 Running technique: {technique.name}")
+        print(f"Running technique: {technique.name}")
 
         start_time = time.time()
         results = technique.predict_batch(images)
@@ -252,12 +252,12 @@ def run_benchmark(experiment_config: dict[str, Any], run_id: str) -> dict[str, A
         }
         all_results.append(technique_results)
 
-        print(f"  ✅ Processed {len(images)} images in {total_time:.2f}s")
-        print(f"  📊 Found {summary_entry['total_detections']} total detections")
-        print(f"  ⚡ {perf_metrics['images_per_second']:.2f} images/sec")
+        print(f"  Processed {len(images)} images in {total_time:.2f}s")
+        print(f"  Found {summary_entry['total_detections']} total detections")
+        print(f"  {perf_metrics['images_per_second']:.2f} images/sec")
 
     # Save results
-    print("💾 Saving results...")
+    print("Saving results...")
 
     # Save summary CSV
     import pandas as pd
@@ -286,21 +286,21 @@ def run_benchmark(experiment_config: dict[str, Any], run_id: str) -> dict[str, A
         )
 
     # Generate report
-    print("📊 Generating report...")
+    print("Generating report...")
     try:
         from bench.benchcore.viz.report import generate_benchmark_report
 
         report_files = generate_benchmark_report(str(results_dir))
-        print(f"📄 Report generated: {report_files['report_md']}")
-        print(f"📊 Generated {len(report_files['plots'])} plots")
+        print(f"Report generated: {report_files['report_md']}")
+        print(f"Generated {len(report_files['plots'])} plots")
     except Exception as e:
-        print(f"⚠️  Report generation failed: {e}")
+        print(f"WARNING: Report generation failed: {e}")
 
     # Cleanup techniques
     for technique in techniques:
         technique.teardown()
 
-    print(f"✅ Benchmark complete! Results saved to: {results_dir}")
+    print(f"Benchmark complete! Results saved to: {results_dir}")
 
     return {
         "run_id": run_id,
@@ -337,8 +337,8 @@ def main():
     else:
         run_id = args.run_id
 
-    print(f"🎯 Starting benchmark run: {run_id}")
-    print(f"📋 Config: {args.config}")
+    print(f"Starting benchmark run: {run_id}")
+    print(f"Config: {args.config}")
 
     try:
         results = run_benchmark(experiment_config, run_id)
@@ -359,11 +359,11 @@ def main():
         with open(registry_file, "a") as f:
             f.write(json.dumps(registry_entry) + "\n")
 
-        print(f"📝 Updated run registry: {registry_file}")
-        print("🎉 Benchmark completed successfully!")
+        print(f"Updated run registry: {registry_file}")
+        print("Benchmark completed successfully!")
 
     except Exception as e:
-        print(f"❌ Benchmark failed: {e}")
+        print(f"ERROR: Benchmark failed: {e}")
         import traceback
 
         traceback.print_exc()

@@ -24,26 +24,26 @@ data/
 └── README.md                     # This file
 ```
 
-## 📊 Production Datasets (4 Finalized Datasets)
+## Production Datasets (4 Finalized Datasets)
 
 These are the 4 datasets that have been fully integrated into the VIP benchmarking framework with complete manifest systems and validation.
 
 | Dataset | Status | License | Defect Types | Size | Description |
 |---------|--------|---------|--------------|------|-------------|
-| **Roboflow Plastic Defects** | ✅ **Primary** | **CC BY 4.0** | scratch, contamination, crack, discoloration, flash | 450 images | Custom plastic container defects - directly relevant to VIP use case |
-| **NEU Surface Defects** | ✅ Integrated | **CC BY 4.0** | 6 steel defects: crazing, scratch, pitted surface, patches, rolled-in scale, inclusion | 1,800 images (200×200px) | Classic steel surface defect classification dataset |
-| **GC10-DET** | ✅ Integrated | **CC BY 4.0** | 10 metal defects: punching hole, welding line, water spot, oil spot, etc. | 2,300 images (~919MB) | Metal surface defect detection with bounding box annotations |
-| **TARROS Dataset** | ✅ Integrated | Various | Multi-class defects | Variable size | Multi-class defect detection dataset |
+| **Roboflow Plastic Defects** | **Primary** | **CC BY 4.0** | scratch, contamination, crack, discoloration, flash | 450 images | Custom plastic container defects - directly relevant to VIP use case |
+| **NEU Surface Defects** | Integrated | **CC BY 4.0** | 6 steel defects: crazing, scratch, pitted surface, patches, rolled-in scale, inclusion | 1,800 images (200×200px) | Classic steel surface defect classification dataset |
+| **GC10-DET** | Integrated | **CC BY 4.0** | 10 metal defects: punching hole, welding line, water spot, oil spot, etc. | 2,300 images (~919MB) | Metal surface defect detection with bounding box annotations |
+| **TARROS Dataset** | Integrated | Various | Multi-class defects | Variable size | Multi-class defect detection dataset |
 
 ### Integration Status:
-- ✅ **Manifest System**: All datasets have standardized JSONL manifests
-- ✅ **Benchmarking Ready**: Compatible with VIP benchmarking framework  
-- ✅ **Validated**: Tested through comprehensive benchmark runs
-- ✅ **Production Ready**: Ready for thesis evaluation and deployment
+- **Manifest System**: All datasets have standardized JSONL manifests
+- **Benchmarking Ready**: Compatible with VIP benchmarking framework  
+- **Validated**: Tested through comprehensive benchmark runs
+- **Production Ready**: Ready for thesis evaluation and deployment
 
 ---
 
-## 🔧 Technical Implementation
+## Technical Implementation
 
 ### Manifest System
 Each dataset includes a standardized `manifest.jsonl` file that provides:
@@ -59,7 +59,7 @@ All datasets are processed through the `scripts/create_manifests.py` system whic
 - Validates image paths and annotations
 - Maps class names to VIP defect categories
 
-## 📈 Benchmarking Results
+## Benchmarking Results
 
 The 4 production datasets have been validated through comprehensive benchmarking:
 - **Primary Testing**: Roboflow Plastic Defects (30 images, 5 techniques)
@@ -67,7 +67,7 @@ The 4 production datasets have been validated through comprehensive benchmarking
 - **Best Results**: 75% improvement in detection rates with enhanced techniques
 - **Validation Status**: All datasets ready for thesis evaluation
 
-## 🎯 Usage for VIP
+## Usage for VIP
 
 These datasets provide comprehensive coverage for evaluating the Vision Inspection Pipeline:
 1. **Primary Focus**: Roboflow Plastic Defects (directly relevant to container inspection)

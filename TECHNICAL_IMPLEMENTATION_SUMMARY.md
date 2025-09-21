@@ -4,11 +4,11 @@
 **Repository Status**: Production-Ready for Main Branch  
 **Git Branch**: `feat/data-curation/comprehensive-datasets`  
 
-## 🎯 Project Overview
+## Project Overview
 
 The Vision Inspection Pipeline (VIP) is a comprehensive computer vision system designed for detecting defects in plastic containers using classical image processing techniques. The project has evolved from a basic defect detection system into a robust, benchmarked, and production-ready pipeline with extensive evaluation capabilities.
 
-## 🏗️ System Architecture
+## System Architecture
 
 ### Core Components
 
@@ -23,7 +23,7 @@ workVIP/
 └── results/                    # Benchmark results and reports
 ```
 
-## 🔧 Core Pipeline Implementation
+## Core Pipeline Implementation
 
 ### 1. Detection Engine (`src/vip/`)
 
@@ -140,7 +140,7 @@ class BaseTechnique(ABC):
 - **Enhanced**: Fallback for seaborn style compatibility
 - Statistical summaries and improvement calculations
 
-## 📊 Dataset Integration
+## Dataset Integration
 
 ### Dataset Management (`data/`)
 
@@ -150,24 +150,24 @@ class BaseTechnique(ABC):
    - COCO JSON format annotations
    - Classes: scratch, contamination, crack, discoloration, flash
    - **License**: CC BY 4.0
-   - **Status**: ✅ Fully integrated and benchmarked
+   - **Status**: Fully integrated and benchmarked
 
 2. **NEU Surface Defects** 
    - Steel surface defect classification dataset
    - 6 classes, 1,800 images total
    - **Format**: Nested directory structure (NEU-DET format)
-   - **Status**: ✅ Integrated with custom manifest parser
+   - **Status**: Integrated with custom manifest parser
 
 3. **GC10-DET**
    - Steel defect detection dataset
    - 10 defect classes with numeric directories
    - **Enhanced**: Automatic class name mapping (1→scratches, 2→inclusion, etc.)
-   - **Status**: ✅ Integrated with numeric-to-descriptive mapping
+   - **Status**: Integrated with numeric-to-descriptive mapping
 
 4. **TARROS Dataset**
    - Multi-class defect detection dataset
    - **Format**: Directory-based structure
-   - **Status**: ✅ Integrated with manifest system
+   - **Status**: Integrated with manifest system
 
 #### Dataset Processing (`scripts/`)
 
@@ -215,7 +215,7 @@ class BaseTechnique(ABC):
 - **Robust**: Handles edge cases and error conditions
 - **Fast**: Optimized for CI/CD integration
 
-## 🚀 Performance Results
+## Performance Results
 
 ### Latest Benchmark Results (30 images, Primary Roboflow Plastic Defects Dataset)
 
@@ -232,7 +232,7 @@ class BaseTechnique(ABC):
 - **Fastest**: `hog_enhancement` - 16.19 images/sec with maintained accuracy
 - **Most Detections**: `improved` - 75.6% more detections than baseline
 
-## 🔧 Infrastructure & Automation
+## Infrastructure & Automation
 
 ### Build & Deployment
 
@@ -293,15 +293,15 @@ class BaseTechnique(ABC):
 - **History**: Comprehensive commit history with clear messaging
 
 ### Release Readiness
-- ✅ All tests passing (39/39)
-- ✅ Comprehensive benchmarking completed
-- ✅ Code formatted and mostly lint-clean
-- ✅ Documentation up-to-date
-- ✅ Performance validated
+- All tests passing (39/39)
+- Comprehensive benchmarking completed
+- Code formatted and mostly lint-clean
+- Documentation up-to-date
+- Performance validated
 
-## 🎯 Thesis Acceptance Criteria - Status
+## Thesis Acceptance Criteria - Status
 
-### ✅ Completed Requirements
+### Completed Requirements
 1. **Reproducible Benchmarking**: Full framework implemented
 2. **Classical CV Improvements**: 4 techniques implemented and validated
 3. **Performance Gains**: 75% improvement in detection count demonstrated
@@ -309,13 +309,13 @@ class BaseTechnique(ABC):
 5. **Code Quality**: Tests passing, formatted, documented
 6. **Evaluation Framework**: Comprehensive metrics and reporting
 
-### 📊 Evidence Base
+### Evidence Base
 - **Empirical Results**: 30-image benchmark across 5 techniques
 - **Statistical Analysis**: Performance comparisons with confidence
 - **Reproducibility**: Fixed seeds, environment capture, version control
 - **Documentation**: Technical reports and implementation details
 
-## 🚀 Production Deployment Ready
+## Production Deployment Ready
 
 ### System Requirements
 - **Python**: 3.11+
@@ -345,16 +345,16 @@ class BaseTechnique(ABC):
 
 ---
 
-## 📋 Summary
+## Summary
 
 The Vision Inspection Pipeline has evolved from a basic defect detection system into a **production-ready, thoroughly benchmarked, and extensible computer vision platform**. Key achievements include:
 
-- **🔧 Robust Core**: 5 classical CV detectors with comprehensive error handling
-- **📊 Benchmarking**: Full evaluation framework with 5 improvement techniques
-- **🧪 Quality**: 39 passing tests, formatted code, comprehensive documentation
-- **🚀 Performance**: Up to 75% improvement in detection rates
-- **📈 Production-Ready**: Web API, real-time processing, automated deployment
+- **Robust Core**: 5 classical CV detectors with comprehensive error handling
+- **Benchmarking**: Full evaluation framework with 5 improvement techniques
+- **Quality**: 39 passing tests, formatted code, comprehensive documentation
+- **Performance**: Up to 75% improvement in detection rates
+- **Production-Ready**: Web API, real-time processing, automated deployment
 
 The system successfully demonstrates **classical computer vision improvements** with **empirical validation**, meeting all thesis acceptance criteria while providing a **solid foundation for future research and development**.
 
-**Status**: ✅ **Ready for Main Branch Merge**
+**Status**: Ready for Main Branch Merge
