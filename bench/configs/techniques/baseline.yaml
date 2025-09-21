@@ -1,0 +1,43 @@
+# Baseline technique configuration
+name: "baseline"
+description: "Current VIP pipeline as baseline"
+
+# Technique parameters
+params:
+  defects:
+    - "scratches"
+    - "contamination" 
+    - "discoloration"
+    - "cracks"
+    - "flash"
+  resize_width: null  # No resizing
+
+# Individual detector parameters (future use)
+detector_params:
+  scratches:
+    canny_low: 50
+    canny_high: 150
+    min_length: 20
+    min_width: 2
+  
+  contamination:
+    blur_size: 15
+    threshold: 30
+    min_area: 100
+    max_area: 10000
+  
+  discoloration:
+    window_size: 21
+    threshold: 15.0
+    min_area: 200
+  
+  cracks:
+    sobel_kernel: 3
+    threshold: 50
+    min_length: 15
+    min_width: 1
+  
+  flash:
+    brightness_threshold: 200
+    gradient_threshold: 30
+    min_area: 150

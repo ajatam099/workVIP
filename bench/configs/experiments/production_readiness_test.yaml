@@ -1,0 +1,42 @@
+# Production Readiness Test - All Real Datasets
+name: "production_readiness_test"
+description: "Comprehensive evaluation for main branch readiness using all real datasets"
+
+# Test each dataset individually to ensure they all work
+datasets:
+  - "roboflow_plastic_defects"  # Your custom dataset
+  - "tarros_dataset"            # Container dataset  
+  - "gc10_det"                  # Metal defects
+  - "neu_surface_defects"       # Steel defects
+
+# Reasonable sample size for comprehensive evaluation
+max_images_per_dataset: 15
+
+# Core techniques for production
+techniques:
+  - "baseline"
+  - "improved"
+  - "hog_enhancement"
+
+# Production-ready configurations
+technique_configs:
+  baseline:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+  
+  improved:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+    use_background_removal: true
+    use_glare_removal: true
+    use_region_growing: false  # Too slow for production
+    use_hog_enhancement: true
+    bg_method: "simple"
+    glare_method: "adaptive"
+  
+  hog_enhancement:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+
+# Production evaluation metrics
+metrics: ["classification", "detection", "performance"]
+seed: 42
+save_visualizations: true
+save_detailed_results: true

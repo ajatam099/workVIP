@@ -1,0 +1,116 @@
+# Surface Defects Comprehensive Benchmark
+name: "surface_defects_benchmark"
+description: "Comprehensive evaluation across surface defect datasets"
+
+# Focus on surface defect datasets
+datasets:
+  - name: "mvtec_ad"
+    categories: ["bottle", "capsule"]  # Focus on container-relevant categories
+    weight: 1.5
+  - name: "roboflow_plastic_defects"
+    weight: 2.0  # Highest relevance
+  - name: "gc10_det"
+    weight: 1.0
+  - name: "neu_surface_defects"
+    weight: 0.8
+
+# All available techniques for comprehensive comparison
+techniques:
+  - "baseline"
+  - "improved"
+  - "bg_removal"
+  - "glare_removal"
+  - "hog_enhancement"
+
+# Detailed technique configurations
+technique_configs:
+  baseline:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+    
+  improved:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+    use_background_removal: true
+    use_glare_removal: true
+    use_region_growing: true
+    use_hog_enhancement: true
+    bg_method: "simple"
+    glare_method: "adaptive"
+    intensity_threshold: 12.0
+    glare_intensity_threshold: 0.75
+    
+  bg_removal:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+    bg_method: "simple"
+    
+  glare_removal:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+    glare_method: "adaptive"
+    glare_intensity_threshold: 0.8
+    
+  hog_enhancement:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+
+# Comprehensive evaluation
+evaluation:
+  metrics:
+    - "classification"
+    - "detection"
+    - "segmentation"  # If masks available
+    - "performance"
+  
+  # Stratified sampling for balanced evaluation
+  sampling_strategy: "stratified"
+  max_images_per_class: 20
+  
+  # Statistical analysis
+  statistical_tests: true
+  confidence_intervals: true
+  
+  # Cross-validation
+  cross_validation_folds: 3
+
+# Advanced analysis
+analysis:
+  # Per-defect-type analysis
+  per_defect_analysis: true
+  
+  # Dataset transfer analysis
+  cross_dataset_transfer: true
+  
+  # Failure case analysis
+  error_analysis: true
+  
+  # Confidence calibration
+  calibration_analysis: true
+
+# Reproducibility
+seed: 42
+deterministic: true
+environment_capture: true
+
+# Output settings
+output:
+  save_visualizations: true
+  save_detailed_results: true
+  save_confusion_matrices: true
+  save_pr_curves: true
+  save_roc_curves: true
+  
+  # Generate comprehensive report
+  generate_latex_tables: true
+  generate_comparison_plots: true
+  
+  # Export for thesis
+  thesis_ready_outputs: true
+
+# Quality assurance
+qa:
+  validate_inputs: true
+  check_data_integrity: true
+  verify_reproducibility: true
+
+# Resource management
+resources:
+  max_runtime_hours: 2
+  max_memory_gb: 8
+  parallel_workers: 2

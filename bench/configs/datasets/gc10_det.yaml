@@ -1,0 +1,94 @@
+# GC10-DET Metal Surface Defects Dataset Configuration
+name: "gc10_det"
+description: "Large-scale metal surface defect detection dataset"
+task_type: "detection"
+
+# Dataset paths
+data_dir: "data/raw/gc10_det"
+processed_dir: "data/processed/gc10_det"
+manifest_file: "data/processed/gc10_det/manifest.jsonl"
+
+# Class labels (10 metal defect types)
+classes:
+  - "punching_hole"
+  - "welding_line"
+  - "crescent_gap"
+  - "water_spot"
+  - "oil_spot"
+  - "silk_spot"
+  - "inclusion"
+  - "rolled_pit"
+  - "crease"
+  - "waist_folding"
+
+# Label mapping to VIP types (approximate)
+label_map:
+  "water_spot": "contamination"
+  "oil_spot": "contamination"
+  "silk_spot": "contamination"
+  "inclusion": "contamination"
+  "crease": "scratch"
+  "rolled_pit": "scratch"
+  "punching_hole": "crack"
+  "crescent_gap": "crack"
+  "welding_line": "flash"
+  "waist_folding": "discoloration"
+
+# Dataset splits (use provided train/test if available)
+splits:
+  train: 0.8
+  val: 0.1
+  test: 0.1
+
+# License and attribution
+license: "CC BY 4.0"
+license_url: "https://creativecommons.org/licenses/by/4.0/"
+citation: |
+  @article{lv2020gc10,
+    title={GC10-DET: a large-scale synthetic dataset for metal surface defect detection},
+    author={Lv, Xu and Duan, Fei and Jiang, Jia-Jie and Fu, Xu and Gan, Lin},
+    journal={arXiv preprint arXiv:2006.07628},
+    year={2020}
+  }
+
+# Source information
+source_url: "https://www.kaggle.com/datasets/alex000kim/gc10det"
+kaggle_dataset_id: "alex000kim/gc10det"
+download_method: "kaggle"
+
+# Dataset statistics
+stats:
+  total_images: 2300
+  total_annotations: 3563
+  image_format: "jpg"
+  image_size: "variable (typically 300x300 to 2000x2000)"
+  annotation_format: "bounding_boxes"
+  defect_classes: 10
+  size_mb: 919
+
+# Usage permissions
+commercial_use: true
+attribution_required: true
+share_alike: false
+
+# Relevance to VIP
+vip_relevance: "medium"  # Metal defects, some transferable to plastic
+defect_coverage:
+  contamination: true   # spots, inclusion
+  scratches: true       # crease, rolled_pit
+  cracks: true          # holes, gaps
+  discoloration: true   # waist_folding
+  flash: true           # welding_line
+
+# Image preprocessing
+preprocessing:
+  resize_width: 640
+  normalize: true
+  format: "jpg"
+
+# Quality notes
+quality:
+  annotation_quality: "high"
+  image_quality: "high"
+  industrial_relevance: "high"
+  notes: "Line-scan camera captured images with professional annotations"

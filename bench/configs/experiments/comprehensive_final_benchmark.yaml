@@ -1,0 +1,83 @@
+# Comprehensive Final Benchmark - All Available Datasets
+name: "comprehensive_final_benchmark"
+description: "Final comprehensive evaluation across all downloaded datasets for main branch readiness"
+
+# All available datasets with proper manifests
+datasets:
+  - name: "roboflow_plastic_defects"  # Your custom dataset - highest priority
+    weight: 3.0
+  - name: "tarros_dataset"            # Container classification
+    weight: 2.0  
+  - name: "gc10_det"                  # Metal defects - good coverage
+    weight: 1.5
+  - name: "neu_surface_defects"       # Steel defects - academic standard
+    weight: 1.0
+
+# Sample size for comprehensive but manageable evaluation
+max_images_per_dataset: 25
+
+# All implemented techniques
+techniques:
+  - "baseline"
+  - "improved"
+  - "bg_removal"
+  - "glare_removal"
+  - "region_growing"
+  - "hog_enhancement"
+
+# Optimized technique configurations
+technique_configs:
+  baseline:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+  
+  improved:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+    use_background_removal: true
+    use_glare_removal: true
+    use_region_growing: false  # Skip for main benchmark (too slow)
+    use_hog_enhancement: true
+    bg_method: "simple"
+    glare_method: "adaptive"
+    intensity_threshold: 12.0
+    glare_intensity_threshold: 0.75
+  
+  bg_removal:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+    bg_method: "simple"
+  
+  glare_removal:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+    glare_method: "adaptive"
+    glare_intensity_threshold: 0.8
+  
+  region_growing:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+    intensity_threshold: 15.0
+  
+  hog_enhancement:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+
+# Comprehensive evaluation
+evaluation:
+  metrics: ["classification", "detection", "performance"]
+  statistical_analysis: true
+  cross_dataset_validation: true
+
+# Reproducibility
+seed: 42
+deterministic: true
+environment_capture: true
+
+# Output for main branch readiness
+output:
+  save_visualizations: true
+  save_detailed_results: true
+  generate_summary_report: true
+  thesis_ready_outputs: true
+
+# Quality gates
+quality_gates:
+  min_datasets: 4
+  min_images: 100
+  min_techniques: 5
+  max_runtime_minutes: 15

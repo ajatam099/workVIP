@@ -1,0 +1,50 @@
+# Roboflow Plastic Defects Test - Your Custom Dataset
+name: "roboflow_plastic_test"
+description: "Test VIP pipeline on custom Roboflow plastic defects dataset (445 images)"
+
+# Use your custom Roboflow dataset
+dataset: "roboflow_plastic_defects"
+dataset_config: {}
+
+# Test with more images since we have good coverage
+max_images_per_dataset: 50
+
+# All techniques for comprehensive comparison
+techniques:
+  - "baseline"
+  - "improved"
+  - "bg_removal"
+  - "glare_removal"
+  - "hog_enhancement"
+
+# Technique configurations
+technique_configs:
+  baseline:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+  
+  improved:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+    use_background_removal: true
+    use_glare_removal: true
+    use_region_growing: false  # Skip for speed
+    use_hog_enhancement: true
+    bg_method: "simple"
+    glare_method: "adaptive"
+  
+  bg_removal:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+    bg_method: "simple"
+  
+  glare_removal:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+    glare_method: "adaptive"
+    glare_intensity_threshold: 0.8
+  
+  hog_enhancement:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+
+# Evaluation settings
+metrics: ["classification", "detection", "performance"]
+seed: 42
+save_visualizations: true
+save_detailed_results: true

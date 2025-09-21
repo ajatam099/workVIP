@@ -1,0 +1,64 @@
+# Demo Surface Defects Dataset Configuration
+name: "demo_surface_defects"
+description: "Demo dataset for testing manifest creation"
+task_type: "classification"
+
+# Dataset paths
+data_dir: "data/raw/demo_surface_defects"
+processed_dir: "data/processed/demo_surface_defects"
+manifest_file: "data/processed/demo_surface_defects/manifest.jsonl"
+
+# Class labels
+classes:
+  - "scratches"
+  - "contamination"
+  - "good"
+
+# Label mapping to VIP types
+label_map:
+  "scratches": "scratch"
+  "contamination": "contamination"
+  "good": "good"
+
+# Dataset splits
+splits:
+  train: 0.7
+  val: 0.2
+  test: 0.1
+
+# License and attribution
+license: "Demo/Testing"
+license_url: null
+citation: "Demo dataset for VIP benchmarking framework testing"
+
+# Source information
+source_url: "local"
+download_method: "manual"
+
+# Dataset statistics
+stats:
+  total_images: 6  # Estimated
+  image_format: "jpg"
+  image_size: "variable"
+  defect_classes: 3
+  size_mb: 1
+
+# Usage permissions
+commercial_use: true
+attribution_required: false
+share_alike: false
+
+# Relevance to VIP
+vip_relevance: "high"
+defect_coverage:
+  contamination: true
+  scratches: true
+  cracks: false
+  discoloration: false
+  flash: false
+
+# Image preprocessing
+preprocessing:
+  resize_width: null
+  normalize: false
+  format: "jpg"

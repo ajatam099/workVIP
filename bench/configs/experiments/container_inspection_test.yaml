@@ -1,0 +1,50 @@
+# Container Inspection Test - Using Tarros Dataset
+name: "container_inspection_test"
+description: "Test VIP pipeline on real container dataset (most relevant to use case)"
+
+# Use the container dataset
+dataset: "tarros_dataset"
+dataset_config: {}
+
+# Test with limited images for quick validation
+max_images_per_dataset: 20
+
+# All techniques for comprehensive comparison
+techniques:
+  - "baseline"
+  - "improved"
+  - "bg_removal"
+  - "glare_removal"
+  - "hog_enhancement"
+
+# Technique configurations
+technique_configs:
+  baseline:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+  
+  improved:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+    use_background_removal: true
+    use_glare_removal: true
+    use_region_growing: false  # Skip for speed
+    use_hog_enhancement: true
+    bg_method: "simple"
+    glare_method: "adaptive"
+  
+  bg_removal:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+    bg_method: "simple"
+  
+  glare_removal:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+    glare_method: "adaptive"
+    glare_intensity_threshold: 0.8
+  
+  hog_enhancement:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+
+# Evaluation settings
+metrics: ["classification", "detection", "performance"]
+seed: 42
+save_visualizations: true
+save_detailed_results: true

@@ -1,0 +1,27 @@
+# Demo dataset configuration
+name: "demo_dataset"
+description: "Demo dataset for testing benchmarking framework"
+task_type: "detection"  # classification, detection, segmentation
+
+# Dataset paths (relative to project root)
+data_dir: "input"
+annotation_file: null  # No annotations for demo
+
+# Data splits (for future use)
+splits:
+  train: 0.7
+  val: 0.2  
+  test: 0.1
+
+# Class labels
+classes:
+  - "scratch"
+  - "contamination" 
+  - "discoloration"
+  - "crack"
+  - "flash"
+
+# Image preprocessing
+preprocessing:
+  resize_width: null  # Keep original size
+  normalize: false

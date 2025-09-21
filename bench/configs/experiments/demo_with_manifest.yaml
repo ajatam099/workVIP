@@ -1,0 +1,46 @@
+# Demo experiment using manifest-based dataset loading
+name: "demo_with_manifest"
+description: "Test experiment using demo dataset with manifest loading"
+
+# Dataset to use (will load from manifest)
+dataset: "demo_surface_defects"
+dataset_config: {}
+
+# Limit images for quick testing
+max_images_per_dataset: 5
+
+# Techniques to benchmark
+techniques:
+  - "baseline"
+  - "hog_enhancement"
+
+# Technique-specific configurations
+technique_configs:
+  baseline:
+    defects:
+      - "scratches"
+      - "contamination"
+      - "discoloration" 
+      - "cracks"
+      - "flash"
+  
+  hog_enhancement:
+    defects:
+      - "scratches"
+      - "contamination"
+      - "discoloration" 
+      - "cracks"
+      - "flash"
+
+# Evaluation settings
+metrics:
+  - "classification"
+  - "detection" 
+  - "performance"
+
+# Reproducibility
+seed: 42
+
+# Output settings
+save_visualizations: true
+save_detailed_results: true

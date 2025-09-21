@@ -1,0 +1,34 @@
+# Baseline demo experiment
+name: "baseline_demo"
+description: "Demo experiment to test baseline technique"
+
+# Dataset to use
+dataset: "demo_dataset"
+dataset_config: {}
+
+# Techniques to benchmark
+techniques:
+  - "baseline"
+
+# Technique-specific configurations
+technique_configs:
+  baseline:
+    defects:
+      - "scratches"
+      - "contamination"
+      - "discoloration" 
+      - "cracks"
+      - "flash"
+
+# Evaluation settings
+metrics:
+  - "classification"
+  - "detection" 
+  - "performance"
+
+# Reproducibility
+seed: 42
+
+# Output settings
+save_visualizations: true
+save_detailed_results: true
