@@ -3,7 +3,7 @@
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import cv2
 import numpy as np
@@ -12,7 +12,7 @@ import numpy as np
 def ensure_dir(path: str) -> None:
     """
     Ensure directory exists, create if it doesn't.
-    
+
     Args:
         path: Directory path to ensure exists
     """
@@ -22,7 +22,7 @@ def ensure_dir(path: str) -> None:
 def save_overlay_image(path: str, image: np.ndarray) -> None:
     """
     Save overlay image to path.
-    
+
     Args:
         path: Output path for the image
         image: BGR numpy array to save
@@ -33,16 +33,16 @@ def save_overlay_image(path: str, image: np.ndarray) -> None:
         raise RuntimeError(f"Failed to save overlay image to {path}")
 
 
-def save_json_data(path: str, data: Dict[str, Any]) -> None:
+def save_json_data(path: str, data: dict[str, Any]) -> None:
     """
     Save JSON data to path.
-    
+
     Args:
         path: Output path for the JSON file
         data: Dictionary to serialize to JSON
     """
     ensure_dir(os.path.dirname(path))
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 
@@ -52,7 +52,7 @@ def save_results(
     detections: list,
     overlay_image: np.ndarray,
     save_overlay: bool = True,
-    save_json: bool = True
+    save_json: bool = True,
 ) -> None:
     """
     Save both overlay image and JSON results for an image.
@@ -84,10 +84,10 @@ def save_results(
                 # Convert mask to list of coordinates or save as separate file
                 det_dict["mask_shape"] = [int(x) for x in detection.mask.shape]
             serializable_detections.append(det_dict)
-        
+
         results = {
             "image": stem,
             "detections": serializable_detections,
-            "total_defects": len(serializable_detections)
+            "total_defects": len(serializable_detections),
         }
         save_json_data(json_path, results)

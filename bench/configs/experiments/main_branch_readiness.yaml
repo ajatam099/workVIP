@@ -1,0 +1,47 @@
+# Main Branch Readiness Assessment
+name: "main_branch_readiness"
+description: "Comprehensive evaluation for main branch deployment across all datasets"
+
+# Test each dataset individually to ensure comprehensive coverage
+dataset: "roboflow_plastic_defects"  # Start with your custom dataset
+max_images_per_dataset: 30
+
+# Production-ready techniques (exclude slow region_growing)
+techniques:
+  - "baseline"
+  - "improved"
+  - "bg_removal"
+  - "glare_removal"
+  - "hog_enhancement"
+
+# Optimized configurations for production
+technique_configs:
+  baseline:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+  
+  improved:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+    use_background_removal: true
+    use_glare_removal: true
+    use_region_growing: false  # Too slow for production
+    use_hog_enhancement: true
+    bg_method: "simple"
+    glare_method: "adaptive"
+  
+  bg_removal:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+    bg_method: "simple"
+  
+  glare_removal:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+    glare_method: "adaptive"
+    glare_intensity_threshold: 0.8
+  
+  hog_enhancement:
+    defects: ["scratches", "contamination", "discoloration", "cracks", "flash"]
+
+# Comprehensive evaluation
+metrics: ["classification", "detection", "performance"]
+seed: 42
+save_visualizations: true
+save_detailed_results: true

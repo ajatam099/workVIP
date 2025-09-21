@@ -187,7 +187,7 @@ class ManifestCreator:
                                     meta={"class": class_name},
                                 )
                                 manifest_entries.append(entry)
-                
+
                 # Process validation split
                 val_images_dir = neu_det_dir / "validation" / "images"
                 if val_images_dir.exists():
@@ -205,7 +205,7 @@ class ManifestCreator:
                                 )
                                 manifest_entries.append(entry)
                 return manifest_entries
-        
+
         elif dataset_name == "tarros_dataset":
             # Tarros dataset has DATASET_improved/[angle]/[split]/[class]/ structure
             dataset_improved_dir = dataset_dir / "DATASET_improved"
@@ -213,7 +213,7 @@ class ManifestCreator:
                 angles = ["1_front", "2_back", "3_up"]
                 splits_map = {"train": "train", "validation": "val", "test": "test"}
                 class_map = {"1_true": "good", "2_false": "defective"}
-                
+
                 for angle in angles:
                     angle_dir = dataset_improved_dir / angle
                     if angle_dir.exists():
@@ -233,7 +233,7 @@ class ManifestCreator:
                                                 meta={
                                                     "class": class_label,
                                                     "angle": angle,
-                                                    "original_class": class_dir_name
+                                                    "original_class": class_dir_name,
                                                 },
                                             )
                                             manifest_entries.append(entry)
@@ -289,12 +289,16 @@ class ManifestCreator:
         dataset_dir = self.raw_dir / dataset_name
         manifest_entries = []
 
+        # Handle COCO format datasets (like Roboflow)
+        if config.get("annotation_format") == "coco":
+            return self.create_coco_manifest(dataset_name, config, dataset_dir)
+
         # Handle GC10-DET special structure
         if dataset_name == "gc10_det":
             # GC10-DET has numbered directories (1-10) for different defect types
             defect_map = {
                 "1": "punching_hole",
-                "2": "welding_line", 
+                "2": "welding_line",
                 "3": "crescent_gap",
                 "4": "water_spot",
                 "5": "oil_spot",
@@ -302,23 +306,23 @@ class ManifestCreator:
                 "7": "inclusion",
                 "8": "rolled_pit",
                 "9": "crease",
-                "10": "waist_folding"
+                "10": "waist_folding",
             }
-            
+
             for class_num, class_name in defect_map.items():
                 class_dir = dataset_dir / class_num
                 if class_dir.exists():
                     image_files = list(class_dir.glob("*.jpg"))
-                    
+
                     # Split files according to configuration
                     splits = config.get("splits", {"train": 0.8, "val": 0.1, "test": 0.1})
                     total_files = len(image_files)
                     train_count = int(total_files * splits.get("train", 0.8))
                     val_count = int(total_files * splits.get("val", 0.1))
-                    
+
                     for i, img_file in enumerate(image_files):
                         rel_path = str(img_file.relative_to(self.raw_dir))
-                        
+
                         # Determine split
                         if i < train_count:
                             split = "train"
@@ -326,7 +330,7 @@ class ManifestCreator:
                             split = "val"
                         else:
                             split = "test"
-                        
+
                         entry = self.create_manifest_entry(
                             image_path=rel_path,
                             split=split,
@@ -335,7 +339,7 @@ class ManifestCreator:
                             meta={"class": class_name, "class_number": class_num},
                         )
                         manifest_entries.append(entry)
-            
+
             return manifest_entries
 
         # Look for annotation files (common formats)
@@ -382,6 +386,99 @@ class ManifestCreator:
                 meta={"needs_annotation_parsing": True},
             )
             manifest_entries.append(entry)
+
+        return manifest_entries
+
+    def create_coco_manifest(
+        self, dataset_name: str, config: dict[str, Any], dataset_dir: Path
+    ) -> list[dict[str, Any]]:
+        """Create manifest for COCO format datasets."""
+        manifest_entries = []
+
+        # Process each split (train, valid, test)
+        splits = ["train", "valid", "test"]
+        split_mapping = {"valid": "val"}  # Roboflow uses 'valid', we use 'val'
+
+        for split in splits:
+            split_dir = dataset_dir / split
+            if not split_dir.exists():
+                print(f"Warning: Split {split} not found in {dataset_name}")
+                continue
+
+            # Look for COCO annotation file
+            annotation_file = split_dir / "_annotations.coco.json"
+            if not annotation_file.exists():
+                print(f"Warning: COCO annotations not found for {split} split")
+                continue
+
+            # Load COCO annotations
+            try:
+                with open(annotation_file) as f:
+                    coco_data = json.load(f)
+
+                # Create image ID to filename mapping
+                images_info = {img["id"]: img for img in coco_data["images"]}
+
+                # Create category ID to name mapping
+                categories_info = {cat["id"]: cat["name"] for cat in coco_data["categories"]}
+
+                # Process annotations
+                image_annotations = {}
+                for ann in coco_data["annotations"]:
+                    image_id = ann["image_id"]
+                    if image_id not in image_annotations:
+                        image_annotations[image_id] = []
+
+                    # Convert COCO bbox format [x, y, width, height] to our format
+                    bbox = ann["bbox"]
+                    category_name = categories_info[ann["category_id"]]
+
+                    image_annotations[image_id].append(
+                        {
+                            "label": category_name,
+                            "bbox": bbox,  # Already in [x, y, w, h] format
+                            "area": ann.get("area", bbox[2] * bbox[3]),
+                        }
+                    )
+
+                # Create manifest entries
+                for image_id, image_info in images_info.items():
+                    # Check if images are in images/ subdirectory or directly in split directory
+                    images_subdir = split_dir / "images"
+                    if images_subdir.exists():
+                        image_path = f"{dataset_name}/{split}/images/{image_info['file_name']}"
+                    else:
+                        image_path = f"{dataset_name}/{split}/{image_info['file_name']}"
+
+                    # Get annotations for this image
+                    annotations = image_annotations.get(image_id, [])
+                    labels = [ann["label"] for ann in annotations]
+                    boxes = [ann["bbox"] for ann in annotations]
+
+                    # Map split name
+                    manifest_split = split_mapping.get(split, split)
+
+                    entry = self.create_manifest_entry(
+                        image_path=image_path,
+                        split=manifest_split,
+                        dataset_config=config,
+                        labels=labels,
+                        boxes=boxes,
+                        meta={
+                            "coco_image_id": image_id,
+                            "image_width": image_info["width"],
+                            "image_height": image_info["height"],
+                            "num_annotations": len(annotations),
+                        },
+                    )
+                    manifest_entries.append(entry)
+
+                print(
+                    f"✓ Processed {split}: {len(images_info)} images, {len(coco_data['annotations'])} annotations"
+                )
+
+            except Exception as e:
+                print(f"Error processing {split} annotations: {e}")
 
         return manifest_entries
 

@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
 """Working Enhanced VIP server with image upload - no multipart issues."""
 
-import sys
-import os
 import base64
-import json
-import tempfile
+import os
+import sys
 from pathlib import Path
-from typing import List, Dict, Optional
 
 # Add the parent directory to Python path so we can import VIP modules
 parent_dir = Path(__file__).parent.parent
@@ -17,53 +14,56 @@ sys.path.insert(0, str(parent_dir / "src"))
 os.chdir(Path(__file__).parent)
 
 try:
+    import cv2
+    import numpy as np
+    import uvicorn
     from fastapi import FastAPI, HTTPException, Request
     from fastapi.responses import HTMLResponse, JSONResponse
     from fastapi.staticfiles import StaticFiles
-    import uvicorn
-    import cv2
-    import numpy as np
-    
+
     # Import VIP modules
     from vip.config import RunConfig
     from vip.pipeline import Pipeline
     from vip.utils.viz import overlay_detections
-    
-    app = FastAPI(title="VIP Working Enhanced", description="Working Vision Inspection Pipeline with Image Upload")
-    
+
+    app = FastAPI(
+        title="VIP Working Enhanced",
+        description="Working Vision Inspection Pipeline with Image Upload",
+    )
+
     # Mount static files
     static_dir = Path(__file__).parent / "static"
     if not static_dir.exists():
         os.makedirs(static_dir)
     app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
-    
+
     # Initialize pipeline
     print("🔧 Initializing VIP pipeline...")
     config = RunConfig(defects=["scratches", "contamination", "discoloration", "cracks", "flash"])
     pipeline = Pipeline(config)
     print("✅ Pipeline initialized successfully!")
-    
+
     # Color mapping for different defect types (BGR format for OpenCV)
     DEFECT_COLORS = {
-        "scratch": (0, 255, 0),        # Green
-        "scratches": (0, 255, 0),      # Green (plural)
+        "scratch": (0, 255, 0),  # Green
+        "scratches": (0, 255, 0),  # Green (plural)
         "contamination": (0, 0, 255),  # Red
         "discoloration": (255, 0, 0),  # Blue
-        "crack": (0, 255, 255),        # Yellow (BGR: Blue=0, Green=255, Red=255)
-        "cracks": (0, 255, 255),       # Yellow (BGR: Blue=0, Green=255, Red=255)
-        "flash": (255, 0, 255),        # Magenta
-        "default": (128, 128, 128)     # Gray
+        "crack": (0, 255, 255),  # Yellow (BGR: Blue=0, Green=255, Red=255)
+        "cracks": (0, 255, 255),  # Yellow (BGR: Blue=0, Green=255, Red=255)
+        "flash": (255, 0, 255),  # Magenta
+        "default": (128, 128, 128),  # Gray
     }
-    
+
     def get_defect_color(defect_label):
         """Get color for a specific defect type."""
         return DEFECT_COLORS.get(defect_label.lower(), DEFECT_COLORS["default"])
-    
+
     # Global variables for camera state
     camera_active = False
     camera_thread = None
     latest_frame = None
-    
+
     @app.get("/", response_class=HTMLResponse)
     async def read_root():
         html_content = """
@@ -475,61 +475,65 @@ try:
         </html>
         """
         return HTMLResponse(content=html_content)
-    
+
     @app.post("/process")
     async def process_image(request: Request):
         """Process uploaded image through VIP pipeline."""
         try:
             # Get the raw body
             body = await request.body()
-            
+
             if not body:
                 raise HTTPException(status_code=400, detail="No file uploaded")
-            
+
             print("📁 Processing uploaded image...")
-            
+
             # Parse multipart form data to extract the uploaded file
             content_type = request.headers.get("content-type", "")
             if "multipart/form-data" not in content_type:
-                raise HTTPException(status_code=400, detail="Content type must be multipart/form-data")
-            
+                raise HTTPException(
+                    status_code=400, detail="Content type must be multipart/form-data"
+                )
+
             # Simple multipart parsing for file upload
             boundary = None
             for header in content_type.split(";"):
                 if "boundary=" in header:
                     boundary = header.split("boundary=")[1].strip()
                     break
-            
+
             if not boundary:
-                raise HTTPException(status_code=400, detail="Could not find boundary in multipart data")
-            
+                raise HTTPException(
+                    status_code=400, detail="Could not find boundary in multipart data"
+                )
+
             # Parse the multipart data
             parts = body.split(f"--{boundary}".encode())
             uploaded_image = None
-            
+
             for part in parts:
                 if b"Content-Disposition: form-data" in part and b"filename=" in part:
                     # Extract the image data (skip headers)
                     header_end = part.find(b"\r\n\r\n")
                     if header_end != -1:
-                        image_data = part[header_end + 4:]
+                        image_data = part[header_end + 4 :]
                         # Remove trailing boundary markers
                         if image_data.endswith(b"\r\n"):
                             image_data = image_data[:-2]
-                        
+
                         # Convert to numpy array and decode
                         nparr = np.frombuffer(image_data, np.uint8)
                         uploaded_image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
                         if uploaded_image is not None:
                             print(f"✅ Successfully decoded uploaded image: {uploaded_image.shape}")
                             break
-            
+
             if uploaded_image is None:
                 # Fallback to test image if upload failed
                 print("⚠️ Could not decode uploaded image, using test image")
                 input_dir = Path(__file__).parent.parent / "input"
                 test_images = list(input_dir.glob("*.jpg")) + list(input_dir.glob("*.png"))
-                
+
                 if test_images:
                     test_image_path = test_images[0]
                     print(f"📸 Using test image: {test_image_path.name}")
@@ -540,44 +544,67 @@ try:
                     # Final fallback to simulated image
                     print("⚠️ No test images found, using simulated image")
                     uploaded_image = np.ones((400, 600, 3), dtype=np.uint8) * 240
-                    cv2.putText(uploaded_image, 'Simulated Image', (50, 200), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
+                    cv2.putText(
+                        uploaded_image,
+                        "Simulated Image",
+                        (50, 200),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        1,
+                        (0, 0, 0),
+                        2,
+                    )
                     cv2.rectangle(uploaded_image, (100, 100), (200, 150), (0, 0, 255), 2)
-                    cv2.putText(uploaded_image, 'Simulated Defect', (100, 180), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
-            
+                    cv2.putText(
+                        uploaded_image,
+                        "Simulated Defect",
+                        (100, 180),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.5,
+                        (0, 0, 255),
+                        1,
+                    )
+
             test_image = uploaded_image
-            
+
             # Process through VIP pipeline
             print(f"🔍 Running detection pipeline on image shape: {test_image.shape}")
             detections = pipeline.run_on_image(test_image)
             print(f"📊 Total detections found: {len(detections)}")
-            
+
             # Debug: Show detection types
             detection_types = {}
             for det in detections:
                 detection_types[det.label] = detection_types.get(det.label, 0) + 1
             print(f"🎯 Detection breakdown: {detection_types}")
-            
+
             # Filter detections by confidence threshold and apply NMS-like filtering
             CONFIDENCE_THRESHOLD = 0.3  # Lower threshold to show more detections (30% confidence)
             MIN_BBOX_SIZE = 15  # Smaller minimum size to catch more defects
-            
+
             filtered_detections = []
             for detection in detections:
                 if detection.score >= CONFIDENCE_THRESHOLD and detection.bbox:
                     # Check bounding box size
                     if isinstance(detection.bbox, tuple) and len(detection.bbox) >= 4:
                         x, y, w, h = detection.bbox
-                    elif hasattr(detection.bbox, 'x'):
-                        x, y, w, h = detection.bbox.x, detection.bbox.y, detection.bbox.width, detection.bbox.height
+                    elif hasattr(detection.bbox, "x"):
+                        x, y, w, h = (
+                            detection.bbox.x,
+                            detection.bbox.y,
+                            detection.bbox.width,
+                            detection.bbox.height,
+                        )
                     else:
                         continue
-                    
+
                     # Only include if bounding box is large enough
                     if w >= MIN_BBOX_SIZE and h >= MIN_BBOX_SIZE:
                         filtered_detections.append(detection)
-            
-            print(f"🔍 Filtered {len(detections)} detections down to {len(filtered_detections)} high-confidence detections")
-            
+
+            print(
+                f"🔍 Filtered {len(detections)} detections down to {len(filtered_detections)} high-confidence detections"
+            )
+
             # Create overlay image
             overlay_image = test_image.copy()
             for detection in filtered_detections:
@@ -585,31 +612,52 @@ try:
                     # Handle both tuple and object bbox formats
                     if isinstance(detection.bbox, tuple) and len(detection.bbox) >= 4:
                         x, y, w, h = detection.bbox
-                    elif hasattr(detection.bbox, 'x'):
-                        x, y, w, h = detection.bbox.x, detection.bbox.y, detection.bbox.width, detection.bbox.height
+                    elif hasattr(detection.bbox, "x"):
+                        x, y, w, h = (
+                            detection.bbox.x,
+                            detection.bbox.y,
+                            detection.bbox.width,
+                            detection.bbox.height,
+                        )
                     else:
                         continue
-                    
+
                     # Get color for this defect type
                     color = get_defect_color(detection.label)
-                    
+
                     # Draw thicker, more visible bounding box
-                    cv2.rectangle(overlay_image, (int(x), int(y)), (int(x + w), int(y + h)), color, 3)
-                    
+                    cv2.rectangle(
+                        overlay_image, (int(x), int(y)), (int(x + w), int(y + h)), color, 3
+                    )
+
                     # Add semi-transparent background for text
                     text = f"{detection.label}: {detection.score:.1f}"
-                    (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
-                    cv2.rectangle(overlay_image, (int(x), int(y - text_height - 10)), 
-                                (int(x + text_width + 5), int(y)), color, -1)
-                    
+                    (text_width, text_height), _ = cv2.getTextSize(
+                        text, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2
+                    )
+                    cv2.rectangle(
+                        overlay_image,
+                        (int(x), int(y - text_height - 10)),
+                        (int(x + text_width + 5), int(y)),
+                        color,
+                        -1,
+                    )
+
                     # Draw text in white for better visibility
-                    cv2.putText(overlay_image, text, (int(x + 2), int(y - 5)), 
-                              cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-            
+                    cv2.putText(
+                        overlay_image,
+                        text,
+                        (int(x + 2), int(y - 5)),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.6,
+                        (255, 255, 255),
+                        2,
+                    )
+
             # Convert to base64
-            _, buffer = cv2.imencode('.jpg', overlay_image)
-            image_base64 = base64.b64encode(buffer).decode('utf-8')
-            
+            _, buffer = cv2.imencode(".jpg", overlay_image)
+            image_base64 = base64.b64encode(buffer).decode("utf-8")
+
             # Convert filtered detections to JSON-serializable format
             detections_json = []
             for detection in filtered_detections:
@@ -621,76 +669,72 @@ try:
                             "x": float(detection.bbox[0]),
                             "y": float(detection.bbox[1]),
                             "width": float(detection.bbox[2]),
-                            "height": float(detection.bbox[3])
+                            "height": float(detection.bbox[3]),
                         }
-                    elif hasattr(detection.bbox, 'x'):
+                    elif hasattr(detection.bbox, "x"):
                         bbox_data = {
                             "x": float(detection.bbox.x),
                             "y": float(detection.bbox.y),
                             "width": float(detection.bbox.width),
-                            "height": float(detection.bbox.height)
+                            "height": float(detection.bbox.height),
                         }
-                
-                detections_json.append({
-                    "label": detection.label,
-                    "score": float(detection.score),
-                    "bbox": bbox_data
-                })
-            
-            return JSONResponse(content={
-                "success": True,
-                "message": "Image processed successfully",
-                "processed_image": image_base64,
-                "detections": detections_json,
-                "detection_count": len(filtered_detections),
-                "total_detections": len(detections),
-                "confidence_threshold": CONFIDENCE_THRESHOLD
-            })
-            
+
+                detections_json.append(
+                    {"label": detection.label, "score": float(detection.score), "bbox": bbox_data}
+                )
+
+            return JSONResponse(
+                content={
+                    "success": True,
+                    "message": "Image processed successfully",
+                    "processed_image": image_base64,
+                    "detections": detections_json,
+                    "detection_count": len(filtered_detections),
+                    "total_detections": len(detections),
+                    "confidence_threshold": CONFIDENCE_THRESHOLD,
+                }
+            )
+
         except Exception as e:
             print(f"❌ Error processing image: {e}")
             return JSONResponse(
                 status_code=500,
-                content={"success": False, "message": f"Error processing image: {str(e)}"}
+                content={"success": False, "message": f"Error processing image: {str(e)}"},
             )
-    
+
     @app.post("/camera/start")
     async def start_camera():
         """Start camera feed (demo mode)."""
         global camera_active
         camera_active = True
-        return JSONResponse(content={
-            "success": True,
-            "message": "Camera started (demo mode)",
-            "note": "This is a simulated camera feed for demonstration"
-        })
-    
+        return JSONResponse(
+            content={
+                "success": True,
+                "message": "Camera started (demo mode)",
+                "note": "This is a simulated camera feed for demonstration",
+            }
+        )
+
     @app.post("/camera/stop")
     async def stop_camera():
         """Stop camera feed."""
         global camera_active
         camera_active = False
-        return JSONResponse(content={
-            "success": True,
-            "message": "Camera stopped"
-        })
-    
+        return JSONResponse(content={"success": True, "message": "Camera stopped"})
+
     @app.get("/camera/frame")
     async def get_camera_frame():
         """Get latest camera frame with processing."""
         global camera_active, latest_frame
-        
+
         if not camera_active:
-            return JSONResponse(content={
-                "success": False,
-                "message": "Camera not active"
-            })
-        
+            return JSONResponse(content={"success": False, "message": "Camera not active"})
+
         try:
             # Use different test images for camera feed to show variety
             input_dir = Path(__file__).parent.parent / "input"
             test_images = list(input_dir.glob("*.jpg")) + list(input_dir.glob("*.png"))
-            
+
             if test_images:
                 # Cycle through available test images
                 frame_count = int(cv2.getTickCount() / cv2.getTickFrequency())
@@ -699,47 +743,86 @@ try:
                 frame = cv2.imread(str(test_image_path))
                 if frame is None:
                     raise Exception("Could not load test image")
-                
+
                 # Resize if too large
                 if frame.shape[0] > 600 or frame.shape[1] > 800:
                     frame = cv2.resize(frame, (800, 600))
-                
+
                 # Add timestamp overlay
-                cv2.putText(frame, f'Live Feed - {test_image_path.name}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-                cv2.putText(frame, f'Frame: {frame_count}', (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+                cv2.putText(
+                    frame,
+                    f"Live Feed - {test_image_path.name}",
+                    (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.7,
+                    (255, 255, 255),
+                    2,
+                )
+                cv2.putText(
+                    frame,
+                    f"Frame: {frame_count}",
+                    (10, 60),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.5,
+                    (255, 255, 255),
+                    1,
+                )
             else:
                 # Fallback to simulated frame
                 frame = np.ones((400, 600, 3), dtype=np.uint8) * 240
-                cv2.putText(frame, 'Live Camera Feed', (50, 200), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
-                cv2.putText(frame, f'Frame: {int(cv2.getTickCount() / cv2.getTickFrequency())}', (50, 250), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (100, 100, 100), 1)
-                
+                cv2.putText(
+                    frame, "Live Camera Feed", (50, 200), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2
+                )
+                cv2.putText(
+                    frame,
+                    f"Frame: {int(cv2.getTickCount() / cv2.getTickFrequency())}",
+                    (50, 250),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.7,
+                    (100, 100, 100),
+                    1,
+                )
+
                 # Add some simulated defects occasionally
                 if int(cv2.getTickCount() / cv2.getTickFrequency()) % 3 == 0:
                     cv2.rectangle(frame, (150, 100), (250, 150), (0, 0, 255), 2)
-                    cv2.putText(frame, 'Live Defect', (150, 180), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
-            
+                    cv2.putText(
+                        frame,
+                        "Live Defect",
+                        (150, 180),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.5,
+                        (0, 0, 255),
+                        1,
+                    )
+
             # Process through VIP pipeline
             detections = pipeline.run_on_image(frame)
-            
+
             # Apply same filtering as image upload
             CONFIDENCE_THRESHOLD = 0.3  # Lower threshold to show more detections (30% confidence)
             MIN_BBOX_SIZE = 15  # Smaller minimum size to catch more defects
-            
+
             filtered_detections = []
             for detection in detections:
                 if detection.score >= CONFIDENCE_THRESHOLD and detection.bbox:
                     # Check bounding box size
                     if isinstance(detection.bbox, tuple) and len(detection.bbox) >= 4:
                         x, y, w, h = detection.bbox
-                    elif hasattr(detection.bbox, 'x'):
-                        x, y, w, h = detection.bbox.x, detection.bbox.y, detection.bbox.width, detection.bbox.height
+                    elif hasattr(detection.bbox, "x"):
+                        x, y, w, h = (
+                            detection.bbox.x,
+                            detection.bbox.y,
+                            detection.bbox.width,
+                            detection.bbox.height,
+                        )
                     else:
                         continue
-                    
+
                     # Only include if bounding box is large enough
                     if w >= MIN_BBOX_SIZE and h >= MIN_BBOX_SIZE:
                         filtered_detections.append(detection)
-            
+
             # Create overlay
             overlay_frame = frame.copy()
             for detection in filtered_detections:
@@ -747,31 +830,52 @@ try:
                     # Handle both tuple and object bbox formats
                     if isinstance(detection.bbox, tuple) and len(detection.bbox) >= 4:
                         x, y, w, h = detection.bbox
-                    elif hasattr(detection.bbox, 'x'):
-                        x, y, w, h = detection.bbox.x, detection.bbox.y, detection.bbox.width, detection.bbox.height
+                    elif hasattr(detection.bbox, "x"):
+                        x, y, w, h = (
+                            detection.bbox.x,
+                            detection.bbox.y,
+                            detection.bbox.width,
+                            detection.bbox.height,
+                        )
                     else:
                         continue
-                    
+
                     # Get color for this defect type
                     color = get_defect_color(detection.label)
-                    
+
                     # Draw thicker, more visible bounding box
-                    cv2.rectangle(overlay_frame, (int(x), int(y)), (int(x + w), int(y + h)), color, 3)
-                    
+                    cv2.rectangle(
+                        overlay_frame, (int(x), int(y)), (int(x + w), int(y + h)), color, 3
+                    )
+
                     # Add semi-transparent background for text
                     text = f"{detection.label}: {detection.score:.1f}"
-                    (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
-                    cv2.rectangle(overlay_frame, (int(x), int(y - text_height - 10)), 
-                                (int(x + text_width + 5), int(y)), color, -1)
-                    
+                    (text_width, text_height), _ = cv2.getTextSize(
+                        text, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2
+                    )
+                    cv2.rectangle(
+                        overlay_frame,
+                        (int(x), int(y - text_height - 10)),
+                        (int(x + text_width + 5), int(y)),
+                        color,
+                        -1,
+                    )
+
                     # Draw text in white for better visibility
-                    cv2.putText(overlay_frame, text, (int(x + 2), int(y - 5)), 
-                              cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-            
+                    cv2.putText(
+                        overlay_frame,
+                        text,
+                        (int(x + 2), int(y - 5)),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.6,
+                        (255, 255, 255),
+                        2,
+                    )
+
             # Convert to base64
-            _, buffer = cv2.imencode('.jpg', overlay_frame)
-            image_base64 = base64.b64encode(buffer).decode('utf-8')
-            
+            _, buffer = cv2.imencode(".jpg", overlay_frame)
+            image_base64 = base64.b64encode(buffer).decode("utf-8")
+
             # Convert filtered detections to JSON
             detections_json = []
             for detection in filtered_detections:
@@ -783,53 +887,57 @@ try:
                             "x": float(detection.bbox[0]),
                             "y": float(detection.bbox[1]),
                             "width": float(detection.bbox[2]),
-                            "height": float(detection.bbox[3])
+                            "height": float(detection.bbox[3]),
                         }
-                    elif hasattr(detection.bbox, 'x'):
+                    elif hasattr(detection.bbox, "x"):
                         bbox_data = {
                             "x": float(detection.bbox.x),
                             "y": float(detection.bbox.y),
                             "width": float(detection.bbox.width),
-                            "height": float(detection.bbox.height)
+                            "height": float(detection.bbox.height),
                         }
-                
-                detections_json.append({
-                    "label": detection.label,
-                    "score": float(detection.score),
-                    "bbox": bbox_data
-                })
-            
-            return JSONResponse(content={
-                "success": True,
-                "image": image_base64,
-                "detections": detections_json,
-                "detection_count": len(detections)
-            })
-            
+
+                detections_json.append(
+                    {"label": detection.label, "score": float(detection.score), "bbox": bbox_data}
+                )
+
+            return JSONResponse(
+                content={
+                    "success": True,
+                    "image": image_base64,
+                    "detections": detections_json,
+                    "detection_count": len(detections),
+                }
+            )
+
         except Exception as e:
             return JSONResponse(
                 status_code=500,
-                content={"success": False, "message": f"Error getting camera frame: {str(e)}"}
+                content={"success": False, "message": f"Error getting camera frame: {str(e)}"},
             )
-    
+
     @app.get("/health")
     async def health_check():
         """Health check endpoint."""
-        return JSONResponse(content={
-            "status": "healthy", 
-            "message": "VIP Enhanced API is running",
-            "detectors": pipeline.list_available_detectors(),
-            "features": ["image_upload", "camera_demo", "defect_detection"]
-        })
-    
+        return JSONResponse(
+            content={
+                "status": "healthy",
+                "message": "VIP Enhanced API is running",
+                "detectors": pipeline.list_available_detectors(),
+                "features": ["image_upload", "camera_demo", "defect_detection"],
+            }
+        )
+
     @app.get("/detectors")
     async def list_detectors():
         """List available detectors."""
-        return JSONResponse(content={
-            "detectors": pipeline.list_available_detectors(),
-            "count": len(pipeline.list_available_detectors())
-        })
-    
+        return JSONResponse(
+            content={
+                "detectors": pipeline.list_available_detectors(),
+                "count": len(pipeline.list_available_detectors()),
+            }
+        )
+
     @app.get("/test")
     async def test_page():
         """Interactive test page."""
@@ -939,14 +1047,14 @@ try:
         </html>
         """
         return HTMLResponse(content=html_content)
-    
+
     print("🚀 Starting VIP Working Enhanced Server...")
     print("📱 Frontend: http://127.0.0.1:8000")
     print("📚 API Docs: http://127.0.0.1:8000/docs")
     print("🔍 Health Check: http://127.0.0.1:8000/health")
     print("\nPress Ctrl+C to stop the server")
     uvicorn.run(app, host="127.0.0.1", port=8000, log_level="info")
-    
+
 except ImportError as e:
     print(f"❌ Error importing modules: {e}")
     print("\nMake sure all dependencies are installed. Try running: uv sync")

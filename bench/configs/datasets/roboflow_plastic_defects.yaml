@@ -1,6 +1,6 @@
-# Roboflow Plastic Defects Dataset Configuration
+# Custom Roboflow Plastic Defects Dataset Configuration  
 name: "roboflow_plastic_defects"
-description: "Plastic container defects - directly relevant to VIP use case"
+description: "Custom plastic container defects dataset - 450 images, directly relevant to VIP"
 task_type: "detection"
 
 # Dataset paths
@@ -8,23 +8,26 @@ data_dir: "data/raw/roboflow_plastic_defects"
 processed_dir: "data/processed/roboflow_plastic_defects"
 manifest_file: "data/processed/roboflow_plastic_defects/manifest.jsonl"
 
-# Class labels (matches VIP defect types)
-classes:
-  - "black_speck"     # Maps to contamination
-  - "dirty"           # Maps to contamination  
-  - "scratch"         # Direct match
+# Annotation format
+annotation_format: "coco"  # COCO JSON format
 
-# Label mapping to VIP types
+# Class labels (will be determined from COCO categories)
+classes: []  # Will be auto-detected from COCO annotations
+
+# Label mapping to VIP types (will be applied automatically)
 label_map:
-  "black_speck": "contamination"
-  "dirty": "contamination"
   "scratch": "scratch"
+  "contamination": "contamination"
+  "crack": "crack"
+  "discoloration": "discoloration"
+  "flash": "flash"
+  # Add more mappings as needed based on your actual classes
 
-# Dataset splits
+# Dataset splits (use Roboflow's pre-defined splits)
 splits:
-  train: 0.7
-  val: 0.2
-  test: 0.1
+  train: "train"      # Use train/ directory
+  val: "valid"        # Use valid/ directory  
+  test: "test"        # Use test/ directory
 
 # License and attribution
 license: "CC BY 4.0"
