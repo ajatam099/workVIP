@@ -144,26 +144,30 @@ class BaseTechnique(ABC):
 
 ### Dataset Management (`data/`)
 
-#### Supported Datasets
-1. **Roboflow Plastic Defects** (Primary)
+#### Finalized Datasets (4 Production Datasets)
+1. **Roboflow Plastic Defects** (Primary Dataset)
    - 450 images of plastic container defects
    - COCO JSON format annotations
    - Classes: scratch, contamination, crack, discoloration, flash
    - **License**: CC BY 4.0
+   - **Status**: ✅ Fully integrated and benchmarked
 
-2. **NEU Surface Defects**
-   - Steel surface defect classification
-   - 6 classes, 1,800 images
-   - **Format**: Nested directory structure
+2. **NEU Surface Defects** 
+   - Steel surface defect classification dataset
+   - 6 classes, 1,800 images total
+   - **Format**: Nested directory structure (NEU-DET format)
+   - **Status**: ✅ Integrated with custom manifest parser
 
 3. **GC10-DET**
    - Steel defect detection dataset
-   - Numeric class directories
-   - **Enhanced**: Automatic class name mapping
+   - 10 defect classes with numeric directories
+   - **Enhanced**: Automatic class name mapping (1→scratches, 2→inclusion, etc.)
+   - **Status**: ✅ Integrated with numeric-to-descriptive mapping
 
-4. **MVTec Anomaly Detection**
-   - Industrial anomaly detection benchmark
-   - **Integration**: Manifest-based loading
+4. **TARROS Dataset**
+   - Multi-class defect detection dataset
+   - **Format**: Directory-based structure
+   - **Status**: ✅ Integrated with manifest system
 
 #### Dataset Processing (`scripts/`)
 
@@ -213,7 +217,7 @@ class BaseTechnique(ABC):
 
 ## 🚀 Performance Results
 
-### Latest Benchmark Results (30 images, Roboflow dataset)
+### Latest Benchmark Results (30 images, Primary Roboflow Plastic Defects Dataset)
 
 | Technique | Images/sec | Total Detections | Latency (ms) | vs Baseline |
 |-----------|------------|------------------|--------------|-------------|
