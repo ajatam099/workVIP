@@ -72,7 +72,7 @@ python -c "import os; print('Datasets ready!' if os.path.exists('data/raw/robofl
 If automatic download fails, download manually:
 
 1. **Roboflow Plastic Defects** (Primary Dataset - 450 images)
-   - **Download**: [Roboflow Universe](https://universe.roboflow.com/panops/plastic-defects)
+   - **Download**: [Roboflow Project](https://app.roboflow.com/defects-m9hrt/bounding-boxes-vsiye/1)
    - **License**: CC BY 4.0
    - **Extract to**: `data/raw/roboflow_plastic_defects/`
 
@@ -87,7 +87,8 @@ If automatic download fails, download manually:
    - **Extract to**: `data/raw/gc10_det/`
 
 4. **TARROS Dataset** (Multi-class Defects)
-   - **Download**: [Contact for access or use placeholder]
+   - **Download**: [Kaggle TARROS Dataset](https://www.kaggle.com/datasets/sebastianfrancogomez/tarros-dataset-final-for-real)
+   - **License**: CC BY 4.0
    - **Extract to**: `data/raw/tarros_dataset/`
 
 After manual download, create manifests:
@@ -199,10 +200,10 @@ for detection in detections:
 
 | Dataset | Primary Use | Size | License | Download Link |
 |---------|-------------|------|---------|---------------|
-| **Roboflow Plastic Defects** | Primary benchmarking | 450 images | CC BY 4.0 | [Universe Link](https://universe.roboflow.com/panops/plastic-defects) |
+| **Roboflow Plastic Defects** | Primary benchmarking | 450 images | CC BY 4.0 | [Roboflow Project](https://app.roboflow.com/defects-m9hrt/bounding-boxes-vsiye/1) |
 | **NEU Surface Defects** | Comparative analysis | 1,800 images | CC BY 4.0 | [Kaggle Link](https://www.kaggle.com/datasets/kaustubhdikshit/neu-surface-defect-database) |
 | **GC10-DET** | Metal defect validation | 2,300 images | CC BY 4.0 | [Kaggle Link](https://www.kaggle.com/datasets/alex000kim/gc10det) |
-| **TARROS Dataset** | Multi-class testing | Variable | Various | Contact for access |
+| **TARROS Dataset** | Multi-class testing | Variable | CC BY 4.0 | [Kaggle Link](https://www.kaggle.com/datasets/sebastianfrancogomez/tarros-dataset-final-for-real) |
 
 **Note**: Datasets are not included in the repository due to size (~2GB total). Use the download scripts or manual links above.
 

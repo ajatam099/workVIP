@@ -66,7 +66,7 @@ python scripts/download_datasets.py
 
 ### Manual Download Links
 
-1. **Primary Dataset**: [Roboflow Plastic Defects](https://universe.roboflow.com/panops/plastic-defects)
+1. **Primary Dataset**: [Roboflow Plastic Defects](https://app.roboflow.com/defects-m9hrt/bounding-boxes-vsiye/1)
    - Most important for thesis evaluation
    - 450 images, CC BY 4.0 license
    - Extract to: `data/raw/roboflow_plastic_defects/`
@@ -74,6 +74,7 @@ python scripts/download_datasets.py
 2. **Comparative Datasets**:
    - [NEU Steel Defects](https://www.kaggle.com/datasets/kaustubhdikshit/neu-surface-defect-database) → `data/raw/neu_surface_defects/`
    - [GC10-DET Metal Defects](https://www.kaggle.com/datasets/alex000kim/gc10det) → `data/raw/gc10_det/`
+   - [TARROS Dataset](https://www.kaggle.com/datasets/sebastianfrancogomez/tarros-dataset-final-for-real) → `data/raw/tarros_dataset/`
 
 After manual download:
 ```bash
