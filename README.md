@@ -56,20 +56,38 @@ For complete benchmarking and evaluation capabilities:
 
 #### Option A: Automatic Dataset Download (Recommended)
 
+**Prerequisites**: Set up Kaggle API credentials for automatic download:
+```bash
+# Install Kaggle API (if not already installed)
+pip install kaggle
+
+# Configure Kaggle API key (follow Kaggle API documentation)
+# Place kaggle.json in ~/.kaggle/ (Linux/Mac) or C:\Users\{username}\.kaggle\ (Windows)
+```
+
 ```bash
 # Download and setup all 4 production datasets
+# Note: Requires Kaggle API key for 3 datasets (NEU, GC10-DET, TARROS)
+# Roboflow dataset requires API key or manual download
 python scripts/download_datasets.py
 
 # Create standardized manifests
 python scripts/create_manifests.py
 
-# Verify setup
-python -c "import os; print('Datasets ready!' if os.path.exists('data/raw/roboflow_plastic_defects') else 'Download datasets first')"
+# Verify setup - check all 4 datasets
+python -c "
+import os
+datasets = ['roboflow_plastic_defects', 'neu_surface_defects', 'gc10_det', 'tarros_dataset']
+available = [d for d in datasets if os.path.exists(f'data/raw/{d}')]
+print(f'Available datasets: {len(available)}/4 - {available}')
+if len(available) == 4: print('All datasets ready!')
+else: print(f'Missing: {[d for d in datasets if d not in available]}')
+"
 ```
 
-#### Option B: Manual Dataset Download
+#### Option B: Manual Dataset Download (More Reliable)
 
-If automatic download fails, download manually:
+If automatic download fails or you prefer manual setup, download directly from source:
 
 1. **Roboflow Plastic Defects** (Primary Dataset - 450 images)
    - **Download**: [Roboflow Project](https://app.roboflow.com/defects-m9hrt/bounding-boxes-vsiye/1)
