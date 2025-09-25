@@ -25,6 +25,7 @@ try:
     from vip.config import RunConfig
     from vip.pipeline import Pipeline
     from vip.utils.viz import overlay_detections
+    from vip.config_loader import get_config_loader
 
     app = FastAPI(
         title="VIP Working Enhanced",
@@ -531,7 +532,7 @@ try:
             if uploaded_image is None:
                 # Fallback to test image if upload failed
                 print("⚠️ Could not decode uploaded image, using test image")
-                input_dir = Path(__file__).parent.parent / "input"
+                input_dir = Path(__file__).parent.parent / "assets" / "images"
                 test_images = list(input_dir.glob("*.jpg")) + list(input_dir.glob("*.png"))
 
                 if test_images:
@@ -577,9 +578,11 @@ try:
                 detection_types[det.label] = detection_types.get(det.label, 0) + 1
             print(f"🎯 Detection breakdown: {detection_types}")
 
-            # Filter detections by confidence threshold and apply NMS-like filtering
-            CONFIDENCE_THRESHOLD = 0.3  # Lower threshold to show more detections (30% confidence)
-            MIN_BBOX_SIZE = 15  # Smaller minimum size to catch more defects
+            # Load global parameters from YAML configuration
+            config = get_config_loader()
+            global_params = config.get_global_params()
+            CONFIDENCE_THRESHOLD = global_params.get('confidence_threshold', 0.3)
+            MIN_BBOX_SIZE = global_params.get('min_bbox_size', 15)
 
             filtered_detections = []
             for detection in detections:
@@ -732,7 +735,7 @@ try:
 
         try:
             # Use different test images for camera feed to show variety
-            input_dir = Path(__file__).parent.parent / "input"
+            input_dir = Path(__file__).parent.parent / "assets" / "images"
             test_images = list(input_dir.glob("*.jpg")) + list(input_dir.glob("*.png"))
 
             if test_images:
@@ -800,8 +803,11 @@ try:
             detections = pipeline.run_on_image(frame)
 
             # Apply same filtering as image upload
-            CONFIDENCE_THRESHOLD = 0.3  # Lower threshold to show more detections (30% confidence)
-            MIN_BBOX_SIZE = 15  # Smaller minimum size to catch more defects
+            # Load global parameters from YAML configuration
+            config = get_config_loader()
+            global_params = config.get_global_params()
+            CONFIDENCE_THRESHOLD = global_params.get('confidence_threshold', 0.3)
+            MIN_BBOX_SIZE = global_params.get('min_bbox_size', 15)
 
             filtered_detections = []
             for detection in detections:

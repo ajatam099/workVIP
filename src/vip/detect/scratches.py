@@ -5,34 +5,41 @@ import cv2
 import numpy as np
 
 from .base import BaseDetector, Detection
+from ..config_loader import get_config_loader
 
 
 class ScratchDetector(BaseDetector):
     """Detects scratches using Canny edge detection and morphology."""
 
-    def __init__(
-        self,
-        name: str = "scratches",
-        canny_low: int = 50,
-        canny_high: int = 150,
-        min_length: int = 20,
-        min_width: int = 2,
-    ):
+    def __init__(self, name: str = "scratches"):
         """
         Initialize scratch detector.
 
         Args:
             name: Detector name
-            canny_low: Lower threshold for Canny edge detection
-            canny_high: Upper threshold for Canny edge detection
-            min_length: Minimum scratch length in pixels
-            min_width: Minimum scratch width in pixels
         """
         super().__init__(name)
-        self.canny_low = canny_low
-        self.canny_high = canny_high
-        self.min_length = min_length
-        self.min_width = min_width
+        
+        # Load parameters from YAML configuration
+        config = get_config_loader()
+        detector_params = config.get_detector_params('scratches')
+        global_params = config.get_global_params()
+        morphology_params = config.get_morphology_params()
+        
+        # Set detector-specific parameters
+        self.canny_low = detector_params.get('canny_low', 50)
+        self.canny_high = detector_params.get('canny_high', 150)
+        self.min_length = detector_params.get('min_length', 20)
+        self.min_width = detector_params.get('min_width', 2)
+        self.min_area = detector_params.get('min_area', 50)
+        self.min_aspect_ratio = detector_params.get('min_aspect_ratio', 2.0)
+        self.score_normalization = detector_params.get('score_normalization', 10.0)
+        
+        # Set global parameters
+        self.gaussian_blur_size = global_params.get('gaussian_blur_size', 5)
+        
+        # Set morphological parameters
+        self.kernel_size = morphology_params.get('scratch_kernel_size', 3)
 
     def detect(self, image: np.ndarray) -> list[Detection]:
         """
@@ -48,13 +55,13 @@ class ScratchDetector(BaseDetector):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
         # Apply Gaussian blur to reduce noise
-        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+        blurred = cv2.GaussianBlur(gray, (self.gaussian_blur_size, self.gaussian_blur_size), 0)
 
         # Canny edge detection
         edges = cv2.Canny(blurred, self.canny_low, self.canny_high)
 
         # Morphological operations to connect edges
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (self.kernel_size, self.kernel_size))
         edges = cv2.morphologyEx(edges, cv2.MORPH_CLOSE, kernel)
 
         # Find connected components
@@ -69,11 +76,11 @@ class ScratchDetector(BaseDetector):
             x, y, w, h, area = stats[i]
 
             # Filter by size and aspect ratio
-            if area < 50:  # Minimum area
+            if area < self.min_area:  # Minimum area
                 continue
 
             aspect_ratio = max(w, h) / max(min(w, h), 1)
-            if aspect_ratio < 2.0:  # Must be elongated
+            if aspect_ratio < self.min_aspect_ratio:  # Must be elongated
                 continue
 
             # Check minimum dimensions
@@ -81,7 +88,7 @@ class ScratchDetector(BaseDetector):
                 continue
 
             # Calculate score based on elongation and contrast
-            score = min(1.0, aspect_ratio / 10.0)  # Normalize score
+            score = min(1.0, aspect_ratio / self.score_normalization)  # Normalize score
 
             # Create detection
             detection = Detection(label="scratch", score=score, bbox=(x, y, w, h))
